@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Honeymoon · A Journey for Two</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --ivory: #faf6f0;
+    --blush: #e8c5a8;
+    --rose: #c47a5a;
+    --deep: #2d1f14;
+    --gold: #c9a96e;
+    --sage: #7a8c7e;
+    --warm-white: #fdf9f4;
+    --text-muted: #7a6a5a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--ivory);
+    color: var(--deep);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background:
+      linear-gradient(to bottom, rgba(45,31,20,0.55) 0%, rgba(45,31,20,0.2) 50%, rgba(45,31,20,0.7) 100%),
+      url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1800&q=80') center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 0.7rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--blush);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    color: var(--warm-white);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 1s 0.55s forwards;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .hero-sub {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.7);
+    margin-top: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 2rem auto;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+
+  .btn-destination {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 1rem 2.2rem;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-destination::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+
+  .btn-destination:hover::before,
+  .btn-destination.active::before {
+    transform: scaleX(1);
+  }
+
+  .btn-destination:hover,
+  .btn-destination.active {
+    border-color: var(--gold);
+    color: var(--deep);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 1.8s forwards;
+  }
+
+  .scroll-hint span {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── MAP ── */
+  .map-section {
+    padding: 5rem 2rem;
+    background: var(--warm-white);
+    text-align: center;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    color: var(--deep);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title em { font-style: italic; color: var(--rose); }
+
+  #map {
+    width: 100%;
+    max-width: 900px;
+    height: 420px;
+    margin: 2.5rem auto 0;
+    border-radius: 2px;
+    box-shadow: 0 20px 60px rgba(45,31,20,0.15);
+    border: 1px solid var(--blush);
+  }
+
+  /* ── DESTINATION SECTIONS ── */
+  .destinations-wrap {
+    padding: 0 1.5rem 6rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .destination-panel {
+    display: none;
+    animation: panelReveal 0.7s ease forwards;
+  }
+
+  .destination-panel.visible { display: block; }
+
+  .panel-hero {
+    position: relative;
+    height: 300px;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+
+  .panel-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .panel-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(45,31,20,0.8) 0%, transparent 60%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+  }
+
+  .panel-hero-overlay h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: white;
+    line-height: 1;
+  }
+
+  .panel-hero-overlay h2 em { font-style: italic; color: var(--blush); }
+
+  .panel-hero-overlay p {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.6);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  /* ── CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid rgba(196,122,90,0.15);
+    padding: 2rem;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(45,31,20,0.1);
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 0.75rem;
+  }
+
+  .card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.5rem;
+    color: var(--deep);
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(196,122,90,0.2);
+  }
+
+  /* Cost Table */
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(196,122,90,0.1);
+  }
+
+  .cost-row:last-child { border-bottom: none; }
+
+  .cost-days {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+
+  .cost-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--deep);
+  }
+
+  .cost-badge {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    background: rgba(201,169,110,0.15);
+    color: var(--gold);
+    border-radius: 1px;
+    margin-left: 0.5rem;
+  }
+
+  /* Flight Table */
+  .flight-row {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(196,122,90,0.1);
+  }
+
+  .flight-row:last-child { border-bottom: none; }
+
+  .flight-route {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.05em;
+  }
+
+  .flight-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .flight-airline {
+    font-size: 0.75rem;
+    color: var(--deep);
+    font-weight: 400;
+  }
+
+  .flight-cost {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    color: var(--rose);
+    font-weight: 600;
+  }
+
+  .flight-note {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Resorts */
+  .resorts-section {
+    margin-bottom: 3rem;
+  }
+
+  .resorts-section .section-label {
+    text-align: left;
+    margin-bottom: 1.5rem;
+  }
+
+  .resort-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .resort-card {
+    background: white;
+    border: 1px solid rgba(196,122,90,0.15);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+  }
+
+  .resort-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(45,31,20,0.12);
+  }
+
+  .resort-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .resort-card:hover .resort-img { transform: scale(1.04); }
+
+  .resort-body { padding: 1.25rem; }
+
+  .resort-stars {
+    color: var(--gold);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .resort-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--deep);
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+  }
+
+  .resort-location {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .resort-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .resort-price-from {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .resort-price-amt {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    color: var(--rose);
+    font-weight: 600;
+  }
+
+  .resort-price-per {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+  }
+
+  /* Tip box */
+  .tip-box {
+    background: linear-gradient(135deg, rgba(196,122,90,0.08), rgba(201,169,110,0.08));
+    border-left: 3px solid var(--gold);
+    padding: 1.25rem 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .tip-box strong {
+    color: var(--deep);
+    font-weight: 500;
+  }
+
+  /* Ornament */
+  .ornament {
+    text-align: center;
+    color: var(--blush);
+    font-size: 1.2rem;
+    letter-spacing: 0.5em;
+    margin: 3rem 0;
+    opacity: 0.6;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--deep);
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    padding: 3rem 2rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  footer .footer-hearts {
+    font-size: 1.2rem;
+    color: var(--rose);
+    display: block;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes panelReveal {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Leaflet custom marker */
+  .custom-marker {
+    background: var(--rose);
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .panel-hero { height: 220px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    #map { height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <p class="hero-eyebrow">✦ A Journey for Two ✦</p>
+  <h1>Our <em>Honeymoon</em></h1>
+  <p class="hero-sub">March 2025 · Mediterranean & Maghreb</p>
+  <div class="hero-divider"></div>
+  <div class="hero-cta">
+    <button class="btn-destination" id="btn-majorca" onclick="showDestination('majorca')">
+      ✦ Majorca &amp; Morocco
+    </button>
+    <button class="btn-destination" id="btn-malta" onclick="showDestination('malta')">
+      ✦ Malta &amp; Italy
+    </button>
+  </div>
+  <div class="scroll-hint">
+    <span>Explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</header>
+
+<!-- ══ MAP ══ -->
+<section class="map-section">
+  <p class="section-label">✦ The Journey ✦</p>
+  <h2 class="section-title">Where <em>Love</em> Takes Us</h2>
+  <div id="map"></div>
+</section>
+
+<!-- ══ DESTINATION PANELS ══ -->
+<div class="destinations-wrap">
+
+  <!-- ── MAJORCA & MOROCCO ── -->
+  <div class="destination-panel" id="panel-majorca">
+    <div class="panel-hero">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80" alt="Majorca">
+      <div class="panel-hero-overlay">
+        <h2>Majorca <em>&</em> Morocco</h2>
+        <p>Balearic bliss meets Maghreb magic</p>
+      </div>
+    </div>
+
+    <!-- Cost + Flights grid -->
+    <div class="cards-grid">
+
+      <!-- Trip Cost Card -->
+      <div class="card">
+        <div class="card-icon">🌙</div>
+        <div class="card-label">✦ Departing March 26th ✦</div>
+        <h3>Trip Investment</h3>
+
+        <div class="cost-row">
+          <span class="cost-days">6 Days / 5 Nights</span>
+          <span>
+            <span class="cost-amount">£2,850</span>
+            <span class="cost-badge">per couple</span>
+          </span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-days">7 Days / 6 Nights</span>
+          <span>
+            <span class="cost-amount">£3,400</span>
+            <span class="cost-badge">per couple</span>
+          </span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-days">8 Days / 7 Nights</span>
+          <span>
+            <span class="cost-amount">£3,950</span>
+            <span class="cost-badge">per couple</span>
+          </span>
+        </div>
+
+        <div class="tip-box">
+          <strong>💡 Itinerary tip:</strong> 4 nights in Majorca then fly to Marrakech for 2–3 nights. This split allows the ideal pace — sun and sea followed by souks and spice.
+        </div>
+      </div>
+
+      <!-- Flights Card -->
+      <div class="card">
+        <div class="card-icon">✈️</div>
+        <div class="card-label">✦ Direct Flights · March 26th ✦</div>
+        <h3>Flight Options</h3>
+
+        <div class="flight-row">
+          <div class="flight-route">London → Palma de Mallorca</div>
+          <div class="flight-price">
+            <span class="flight-airline">Vueling / Ryanair</span>
+            <span class="flight-cost">~£120</span>
+          </div>
+          <div class="flight-note">2h 15m · Direct · per person return</div>
+        </div>
+
+        <div class="flight-row">
+          <div class="flight-route">London → Marrakech</div>
+          <div class="flight-price">
+            <span class="flight-airline">easyJet / Royal Air Maroc</span>
+            <span class="flight-cost">~£140</span>
+          </div>
+          <div class="flight-note">3h 30m · Direct · per person return</div>
+        </div>
+
+        <div class="flight-row">
+          <div class="flight-route">Palma → Marrakech (internal)</div>
+          <div class="flight-price">
+            <span class="flight-airline">Vueling / Transavia</span>
+            <span class="flight-cost">~£80</span>
+          </div>
+          <div class="flight-note">2h 20m · Direct · per person one-way</div>
+        </div>
+
+        <div class="tip-box">
+          <strong>💡 Flight tip:</strong> Book London→Palma outbound and Marrakech→London return for best value. The Palma→Marrakech hop is the missing link — book separately and early.
+        </div>
+      </div>
+    </div>
+
+    <!-- Resorts -->
+    <div class="resorts-section">
+      <p class="section-label">✦ Where to Stay ✦</p>
+      <div class="resort-grid">
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">Cap Vermell Grand Hotel</div>
+            <div class="resort-location">Canyamel, Majorca</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£380</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">Hotel Can Alomar</div>
+            <div class="resort-location">Palma de Mallorca</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£260</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">La Mamounia</div>
+            <div class="resort-location">Marrakech, Morocco</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£620</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">Royal Mansour</div>
+            <div class="resort-location">Marrakech, Morocco</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£850</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★</div>
+            <div class="resort-name">Jumeirah Port Soller</div>
+            <div class="resort-location">Port de Sóller, Majorca</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£295</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ornament">♥ · · ♥ · · ♥</div>
+  </div>
+
+  <!-- ── MALTA & ITALY ── -->
+  <div class="destination-panel" id="panel-malta">
+    <div class="panel-hero">
+      <img src="https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=1200&q=80" alt="Malta">
+      <div class="panel-hero-overlay">
+        <h2>Malta <em>&</em> Italy</h2>
+        <p>Ancient harbours & la dolce vita</p>
+      </div>
+    </div>
+
+    <!-- Cost + Flights -->
+    <div class="cards-grid">
+
+      <div class="card">
+        <div class="card-icon">🌙</div>
+        <div class="card-label">✦ Departing March 26th ✦</div>
+        <h3>Trip Investment</h3>
+
+        <div class="cost-row">
+          <span class="cost-days">6 Days / 5 Nights</span>
+          <span>
+            <span class="cost-amount">£2,600</span>
+            <span class="cost-badge">per couple</span>
+          </span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-days">7 Days / 6 Nights</span>
+          <span>
+            <span class="cost-amount">£3,150</span>
+            <span class="cost-badge">per couple</span>
+          </span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-days">8 Days / 7 Nights</span>
+          <span>
+            <span class="cost-amount">£3,700</span>
+            <span class="cost-badge">per couple</span>
+          </span>
+        </div>
+
+        <div class="tip-box">
+          <strong>💡 Itinerary tip:</strong> 3 nights in Valletta, Malta, then ferry or fly to Sicily and take the train to the Amalfi Coast or Rome. A true grand tour.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">✈️</div>
+        <div class="card-label">✦ Direct Flights · March 26th ✦</div>
+        <h3>Flight Options</h3>
+
+        <div class="flight-row">
+          <div class="flight-route">London → Malta (Valletta)</div>
+          <div class="flight-price">
+            <span class="flight-airline">Air Malta / Ryanair</span>
+            <span class="flight-cost">~£100</span>
+          </div>
+          <div class="flight-note">3h 05m · Direct · per person return</div>
+        </div>
+
+        <div class="flight-row">
+          <div class="flight-route">London → Rome Fiumicino</div>
+          <div class="flight-price">
+            <span class="flight-airline">ITA Airways / easyJet</span>
+            <span class="flight-cost">~£115</span>
+          </div>
+          <div class="flight-note">2h 45m · Direct · per person return</div>
+        </div>
+
+        <div class="flight-row">
+          <div class="flight-route">London → Naples</div>
+          <div class="flight-price">
+            <span class="flight-airline">easyJet / Ryanair</span>
+            <span class="flight-cost">~£95</span>
+          </div>
+          <div class="flight-note">2h 55m · Direct · per person return</div>
+        </div>
+
+        <div class="tip-box">
+          <strong>💡 Flight tip:</strong> Fly into Malta, and return from Rome or Naples. The Malta–Sicily ferry (Virtu Ferries) is a romantic crossing — only 90 minutes.
+        </div>
+      </div>
+    </div>
+
+    <!-- Resorts -->
+    <div class="resorts-section">
+      <p class="section-label">✦ Where to Stay ✦</p>
+      <div class="resort-grid">
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">The Phoenicia Malta</div>
+            <div class="resort-location">Valletta, Malta</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£280</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">Palazzo Ignazio</div>
+            <div class="resort-location">Valletta, Malta</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£195</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">Il Salviatino</div>
+            <div class="resort-location">Florence, Italy</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£440</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★★</div>
+            <div class="resort-name">Belmond Caruso</div>
+            <div class="resort-location">Ravello, Amalfi Coast</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£680</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resort-card">
+          <img class="resort-img" src="https://images.unsplash.com/photo-1512552288940-3a300922a275?w=600&q=80" alt="Resort">
+          <div class="resort-body">
+            <div class="resort-stars">★★★★</div>
+            <div class="resort-name">Capo dei Greci</div>
+            <div class="resort-location">Taormina, Sicily</div>
+            <div class="resort-price">
+              <span class="resort-price-from">from</span>
+              <span class="resort-price-amt">£220</span>
+              <span class="resort-price-per">/ night</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ornament">♥ · · ♥ · · ♥</div>
+  </div>
+
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <span class="footer-hearts">♥ ♥ ♥</span>
+  Made with love · Honeymoon 2025 · All prices are estimates, please verify before booking.
+</footer>
+
+<script>
+// ── MAP INITIALISATION ──
+const map = L.map('map', {
+  center: [38.5, 12.5],
+  zoom: 4,
+  zoomControl: true,
+  scrollWheelZoom: false
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+const markerStyle = (color) => L.divIcon({
+  className: '',
+  html: `<div style="
+    width:14px;height:14px;border-radius:50%;
+    background:${color};border:2px solid white;
+    box-shadow:0 2px 8px rgba(0,0,0,0.35);
+  "></div>`,
+  iconAnchor: [7, 7]
+});
+
+const destinations = [
+  { name: 'Majorca', lat: 39.6953, lng: 3.0176, color: '#c47a5a', group: 'majorca' },
+  { name: 'Marrakech', lat: 31.6295, lng: -7.9811, color: '#c47a5a', group: 'majorca' },
+  { name: 'Valletta, Malta', lat: 35.8997, lng: 14.5147, color: '#7a8c7e', group: 'malta' },
+  { name: 'Rome', lat: 41.9028, lng: 12.4964, color: '#7a8c7e', group: 'malta' },
+  { name: 'Amalfi Coast', lat: 40.6340, lng: 14.6027, color: '#7a8c7e', group: 'malta' },
+  { name: 'Sicily', lat: 37.5994, lng: 14.0154, color: '#7a8c7e', group: 'malta' },
+  { name: 'Florence', lat: 43.7696, lng: 11.2558, color: '#7a8c7e', group: 'malta' },
+];
+
+destinations.forEach(d => {
+  const marker = L.marker([d.lat, d.lng], { icon: markerStyle(d.color) })
+    .addTo(map)
+    .bindPopup(`<b>${d.name}</b>`, { className: 'custom-popup' });
+});
+
+// ── DESTINATION TOGGLE ──
+function showDestination(dest) {
+  document.querySelectorAll('.destination-panel').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.btn-destination').forEach(b => b.classList.remove('active'));
+
+  const panel = document.getElementById('panel-' + dest);
+  if (panel) {
+    panel.classList.add('visible');
+    setTimeout(() => {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  const btn = document.getElementById('btn-' + dest);
+  if (btn) btn.classList.add('active');
+
+  // Highlight map markers
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      const popup = layer.getPopup();
+      // Re-style based on active group — simplified highlight via zoom
+    }
+  });
+}
+
+// Custom Leaflet popup styling
+const style = document.createElement('style');
+style.textContent = `
+  .leaflet-popup-content-wrapper {
+    border-radius: 2px !important;
+    font-family: 'Jost', sans-serif !important;
+    font-size: 0.8rem !important;
+    box-shadow: 0 8px 24px rgba(45,31,20,0.18) !important;
+    border: 1px solid rgba(196,122,90,0.3) !important;
+  }
+  .leaflet-popup-tip { background: white !important; }
+  .leaflet-popup-content b { color: #2d1f14; font-weight: 500; }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>
