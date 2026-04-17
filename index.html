@@ -1,809 +1,821 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nara & Haejoo · Honeymoon 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>우리의 신혼여행 · 2026 봄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+KR:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ivory: #faf6f0;
-    --blush: #e8c5a8;
-    --rose: #c47a5a;
-    --deep: #2d1f14;
-    --gold: #c9a96e;
-    --sage: #7a8c7e;
-    --warm-white: #fdf9f4;
-    --text-muted: #7a6a5a;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Jost', sans-serif; background: var(--ivory); color: var(--deep); font-weight: 300; overflow-x: hidden; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ivory:#FAF7F2;--cream:#F3EDE3;--blush:#EAC8B0;--rose:#C4826A;--rose-deep:#9E5A42;
+  --gold:#B8965A;--gold-light:#D4B07A;--sand:#DDD0BA;--text:#2C2320;--text-mid:#6B5248;
+  --text-light:#A0897E;--sea:#5A9AB5;--sea-light:#A8C8D8;--sea-pale:#E8F4F9;
+  --france:#4A7FA5;--spain:#C4826A;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--text);font-weight:300;overflow-x:hidden}
 
-  /* NAV */
-  .site-nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap;
-    padding: 0.7rem 1rem;
-    background: rgba(45,31,20,0.9); backdrop-filter: blur(10px);
-  }
-  .nav-btn {
-    font-family: 'Jost', sans-serif; font-size: 0.6rem; letter-spacing: 0.18em;
-    text-transform: uppercase; padding: 0.4rem 0.9rem;
-    border: 1px solid rgba(255,255,255,0.2); background: transparent;
-    color: rgba(255,255,255,0.65); cursor: pointer; transition: all 0.3s;
-  }
-  .nav-btn:hover, .nav-btn.active { background: var(--gold); border-color: var(--gold); color: var(--deep); }
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:var(--cream);overflow:hidden;padding:2rem}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 15% 85%,rgba(184,150,90,.13) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 85% 15%,rgba(90,154,181,.15) 0%,transparent 55%),radial-gradient(ellipse 50% 40% at 50% 50%,rgba(234,200,176,.2) 0%,transparent 70%)}
+.wave-bot{position:absolute;bottom:0;left:0;right:0;height:100px;background:var(--ivory);clip-path:ellipse(55% 100% at 50% 100%)}
+.hero-inner{position:relative;z-index:2}
+.hero-eyebrow{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s ease forwards .2s}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,9vw,6.5rem);font-weight:300;line-height:1.05;color:var(--text);margin-bottom:.6rem;opacity:0;animation:fadeUp .8s ease forwards .4s}
+.hero-title em{font-style:italic;color:var(--rose)}
+.hero-sub{font-family:'Noto Serif KR',serif;font-size:clamp(1rem,2.5vw,1.5rem);font-weight:300;color:var(--text-mid);margin-bottom:2.5rem;line-height:1.8;opacity:0;animation:fadeUp .8s ease forwards .6s}
+.hero-names{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;color:var(--rose);opacity:0;animation:fadeUp .8s ease forwards .8s}
+.scroll-cue{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeIn 1s ease forwards 1.4s}
+.scroll-cue span{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text-light)}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,var(--sand),transparent);animation:scrollPulse 2s ease-in-out infinite}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    background: linear-gradient(to bottom, rgba(45,31,20,0.58) 0%, rgba(45,31,20,0.18) 50%, rgba(45,31,20,0.75) 100%),
-      url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1800&q=80') center/cover no-repeat;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 2rem; position: relative;
-  }
-  .hero-eyebrow { font-weight: 200; font-size: 0.7rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--blush); margin-bottom: 1.2rem; opacity: 0; animation: fadeUp 1s 0.3s forwards; }
-  .hero-names { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(3.2rem,10vw,7.5rem); color: var(--warm-white); line-height: 1; opacity: 0; animation: fadeUp 1s 0.55s forwards; }
-  .hero-names em { font-style: italic; color: var(--blush); }
-  .hero-amp { font-style: normal; color: var(--gold); margin: 0 0.15em; }
-  .hero-tag { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.1rem,3vw,1.6rem); color: rgba(255,255,255,0.78); margin-top: 0.7rem; opacity: 0; animation: fadeUp 1s 0.75s forwards; }
-  .hero-sub { font-weight: 200; font-size: 0.78rem; letter-spacing: 0.3em; color: rgba(255,255,255,0.5); margin-top: 0.5rem; text-transform: uppercase; opacity: 0; animation: fadeUp 1s 0.9s forwards; }
-  .hero-divider { width: 60px; height: 1px; background: var(--gold); margin: 2rem auto; opacity: 0; animation: fadeUp 1s 1.05s forwards; }
-  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; opacity: 0; animation: fadeUp 1s 1.2s forwards; }
-  .btn-destination { font-family: 'Jost', sans-serif; font-weight: 400; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.9rem 2rem; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.07); color: white; cursor: pointer; transition: all 0.4s; backdrop-filter: blur(8px); position: relative; overflow: hidden; }
-  .btn-destination::before { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; z-index: -1; }
-  .btn-destination:hover::before, .btn-destination.active::before { transform: scaleX(1); }
-  .btn-destination:hover, .btn-destination.active { border-color: var(--gold); color: var(--deep); }
-  .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; opacity: 0; animation: fadeUp 1s 1.8s forwards; }
-  .scroll-hint span { font-size: 0.58rem; letter-spacing: 0.3em; color: rgba(255,255,255,0.45); text-transform: uppercase; }
-  .scroll-line { width: 1px; height: 38px; background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(250,247,242,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(184,150,90,.15);padding:0 2rem}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--rose);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mid);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
 
-  /* PAGE SECTIONS */
-  .page-section { display: none; }
-  .page-section.visible { display: block; }
+/* TABS */
+.tab-nav{display:flex;gap:0;max-width:1100px;margin:0 auto 3rem;border-bottom:2px solid var(--sand);position:relative}
+.tab-btn{flex:1;padding:1rem;font-family:'Noto Serif KR',serif;font-size:.9rem;font-weight:400;background:none;border:none;cursor:pointer;color:var(--text-light);transition:all .3s;position:relative;text-align:center}
+.tab-btn::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--rose);transform:scaleX(0);transition:transform .3s}
+.tab-btn.active{color:var(--rose)}
+.tab-btn.active::after{transform:scaleX(1)}
+.tab-btn.france-tab.active{color:var(--france)}
+.tab-btn.france-tab::after{background:var(--france)}
+.tab-btn.compare-tab.active{color:var(--gold)}
+.tab-btn.compare-tab::after{background:var(--gold)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 
-  /* MAP */
-  .map-section { padding: 5rem 2rem; background: var(--warm-white); text-align: center; }
-  .section-label { font-size: 0.63rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--rose); margin-bottom: 1rem; }
-  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem,5vw,3.5rem); font-weight: 300; color: var(--deep); margin-bottom: 0.5rem; }
-  .section-title em { font-style: italic; color: var(--rose); }
-  #map { width: 100%; max-width: 900px; height: 420px; margin: 2.5rem auto 0; border-radius: 2px; box-shadow: 0 20px 60px rgba(45,31,20,0.15); border: 1px solid var(--blush); }
+/* SECTIONS */
+section{padding:5rem 2rem}
+.container{max-width:1100px;margin:0 auto}
+.section-label{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;display:block}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:300;line-height:1.15;color:var(--text);margin-bottom:.5rem}
+.section-title em{font-style:italic;color:var(--rose)}
+.section-title-fr em{color:var(--france)}
+.section-ko{font-family:'Noto Serif KR',serif;font-size:.95rem;color:var(--text-mid);line-height:1.9;margin-bottom:1.5rem;font-weight:300}
+.divider{width:50px;height:1px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:2rem}
 
-  /* DESTINATION PANELS */
-  .destinations-wrap { padding: 0 1.5rem 6rem; max-width: 1100px; margin: 0 auto; }
-  .destination-panel { display: none; animation: panelReveal 0.7s ease forwards; }
-  .destination-panel.visible { display: block; }
-  .panel-hero { position: relative; height: 300px; border-radius: 2px; overflow: hidden; margin-bottom: 3rem; }
-  .panel-hero img { width: 100%; height: 100%; object-fit: cover; }
-  .panel-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top,rgba(45,31,20,0.82) 0%,transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem; }
-  .panel-hero-overlay h2 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(1.8rem,5vw,3rem); color: white; line-height: 1; }
-  .panel-hero-overlay h2 em { font-style: italic; color: var(--blush); }
-  .panel-hero-overlay p { font-size: 0.73rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.6); margin-top: 0.5rem; text-transform: uppercase; }
+/* PHOTO GRID */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2rem 0;border-radius:8px;overflow:hidden}
+.photo-grid img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .4s ease}
+.photo-grid img:hover{transform:scale(1.03)}
+.photo-grid .photo-wide{grid-column:span 2;height:220px}
+@media(max-width:600px){.photo-grid{grid-template-columns:1fr 1fr}.photo-grid .photo-wide{grid-column:span 2;height:160px}.photo-grid img{height:140px}}
 
-  /* CARDS */
-  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-  .card { background: white; border: 1px solid rgba(196,122,90,0.15); padding: 2rem; transition: transform 0.3s,box-shadow 0.3s; }
-  .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(45,31,20,0.1); }
-  .card-icon { font-size: 1.4rem; margin-bottom: 1rem; }
-  .card-label { font-size: 0.58rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--rose); margin-bottom: 0.75rem; }
-  .card h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 1.45rem; color: var(--deep); margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(196,122,90,0.2); }
-  .cost-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(196,122,90,0.1); }
-  .cost-row:last-of-type { border-bottom: none; }
-  .cost-days { font-size: 0.79rem; color: var(--text-muted); }
-  .cost-amount { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--deep); }
-  .cost-badge { font-size: 0.54rem; letter-spacing: 0.13em; text-transform: uppercase; padding: 0.18rem 0.45rem; background: rgba(201,169,110,0.14); color: var(--gold); border-radius: 1px; margin-left: 0.4rem; }
-  .flight-row { padding: 0.75rem 0; border-bottom: 1px solid rgba(196,122,90,0.1); }
-  .flight-row:last-child { border-bottom: none; }
-  .flight-route { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.22rem; }
-  .flight-price { display: flex; justify-content: space-between; align-items: center; }
-  .flight-airline { font-size: 0.74rem; color: var(--deep); }
-  .flight-cost { font-family: 'Cormorant Garamond', serif; font-size: 1.22rem; color: var(--rose); font-weight: 600; }
-  .flight-note { font-size: 0.63rem; color: var(--text-muted); margin-top: 0.18rem; }
-  .tip-box { background: linear-gradient(135deg,rgba(196,122,90,0.07),rgba(201,169,110,0.07)); border-left: 3px solid var(--gold); padding: 1.1rem 1.4rem; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.7; }
-  .tip-box strong { color: var(--deep); font-weight: 500; }
+/* HOTEL SECTION */
+.hotel-section-bg{background:var(--cream)}
+.hotel-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-top:2.5rem}
+@media(max-width:768px){.hotel-layout{grid-template-columns:1fr;gap:2rem}}
+.perk-list{list-style:none;margin-top:1.2rem}
+.perk-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(184,150,90,.13);font-size:.87rem;color:var(--text-mid);line-height:1.6}
+.perk-list li:last-child{border-bottom:none}
+.perk-dot{width:5px;height:5px;border-radius:50%;background:var(--rose);flex-shrink:0;margin-top:7px}
+.perk-dot-fr{background:var(--france)}
 
-  /* RESORTS */
-  .resorts-section { margin-bottom: 3rem; }
-  .resorts-section .section-label { text-align: left; margin-bottom: 1.4rem; }
-  .resort-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 1.2rem; }
-  .resort-card { background: white; border: 1px solid rgba(196,122,90,0.15); overflow: hidden; transition: transform 0.3s,box-shadow 0.3s; }
-  .resort-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(45,31,20,0.12); }
-  .resort-img { width: 100%; height: 145px; object-fit: cover; display: block; transition: transform 0.5s; }
-  .resort-card:hover .resort-img { transform: scale(1.04); }
-  .resort-body { padding: 1rem 1.2rem 1.2rem; }
-  .resort-stars { color: var(--gold); font-size: 0.63rem; margin-bottom: 0.25rem; }
-  .resort-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 400; color: var(--deep); margin-bottom: 0.18rem; line-height: 1.2; }
-  .resort-location { font-size: 0.66rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.55rem; }
-  .resort-price { display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.65rem; }
-  .resort-price-from { font-size: 0.63rem; color: var(--text-muted); }
-  .resort-price-amt { font-family: 'Cormorant Garamond', serif; font-size: 1.18rem; color: var(--rose); font-weight: 600; }
-  .resort-price-per { font-size: 0.63rem; color: var(--text-muted); }
-  .resort-link { display: inline-block; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); text-decoration: none; border-bottom: 1px solid rgba(196,122,90,0.35); padding-bottom: 1px; transition: color 0.2s,border-color 0.2s; }
-  .resort-link:hover { color: var(--deep); border-color: var(--deep); }
+/* ROOM CARDS */
+.room-cards{display:flex;flex-direction:column;gap:.9rem}
+.room-card{background:var(--ivory);border:1px solid rgba(184,150,90,.2);border-radius:6px;padding:1.3rem 1.4rem;position:relative;transition:border-color .3s,transform .25s}
+.room-card:hover{border-color:var(--rose);transform:translateX(4px)}
+.room-card.rec::before{content:'추천';position:absolute;top:-10px;left:1.2rem;background:var(--rose);color:#fff;font-size:.6rem;letter-spacing:.15em;padding:3px 10px;border-radius:20px;font-family:'Noto Serif KR',serif}
+.room-card.rec-fr:hover{border-color:var(--france)}
+.room-card.rec-fr::before{background:var(--france);content:'추천'}
+.room-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--text);margin-bottom:.2rem}
+.room-size{font-size:.7rem;color:var(--text-light);letter-spacing:.08em;margin-bottom:.6rem}
+.room-price{font-size:1.35rem;font-family:'Cormorant Garamond',serif;color:var(--rose);margin-bottom:.4rem}
+.room-price.fr-price{color:var(--france)}
+.room-price span{font-size:.72rem;font-family:'Jost',sans-serif;color:var(--text-light);font-weight:300}
+.room-ko{font-size:.8rem;color:var(--text-mid);line-height:1.6;font-family:'Noto Serif KR',serif;margin-bottom:.6rem}
+.room-features{display:flex;flex-wrap:wrap;gap:5px;margin-top:.6rem}
+.tag{font-size:.62rem;padding:2px 8px;border-radius:20px;border:1px solid var(--sand);color:var(--text-mid);background:var(--cream)}
 
-  /* ITINERARY */
-  .itinerary-section { margin-bottom: 3rem; }
-  .itinerary-section > .section-label { text-align: left; margin-bottom: 1.4rem; }
-  .itinerary-section > h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 300; margin-bottom: 1.8rem; color: var(--deep); }
-  .itinerary-section > h3 em { font-style: italic; color: var(--rose); }
-  .day-grid { display: grid; gap: 0.9rem; }
-  .day-card { background: white; border: 1px solid rgba(196,122,90,0.14); padding: 1.4rem; display: grid; grid-template-columns: 52px 1fr; gap: 1.1rem; align-items: start; }
-  .day-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--blush); line-height: 1; text-align: center; }
-  .day-num span { display: block; font-family: 'Jost', sans-serif; font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-top: 0.1rem; }
-  .day-content h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.12rem; font-weight: 400; color: var(--deep); margin-bottom: 0.45rem; }
-  .day-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.7rem; }
-  .day-tag { font-size: 0.56rem; letter-spacing: 0.13em; text-transform: uppercase; padding: 0.22rem 0.55rem; border-radius: 1px; }
-  .tag-sight { background: rgba(122,140,126,0.14); color: var(--sage); }
-  .tag-water { background: rgba(100,150,200,0.14); color: #4a7fa5; }
-  .tag-shop { background: rgba(201,169,110,0.14); color: #9a7030; }
-  .tag-food { background: rgba(196,122,90,0.14); color: var(--rose); }
-  .day-content ul { list-style: none; padding: 0; }
-  .day-content ul li { font-size: 0.8rem; color: var(--text-muted); line-height: 1.65; padding: 0.18rem 0 0.18rem 1.1rem; position: relative; }
-  .day-content ul li::before { content: '·'; position: absolute; left: 0.3rem; color: var(--gold); }
+/* OVERVIEW CARDS */
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--sand);border:1px solid var(--sand);margin-top:2.5rem;border-radius:4px;overflow:hidden}
+.ov-card{background:var(--ivory);padding:1.5rem 1.2rem;text-align:center;transition:background .3s}
+.ov-card:hover{background:var(--cream)}
+.ov-icon{font-size:1.5rem;margin-bottom:.6rem;display:block}
+.ov-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;font-family:'Jost',sans-serif}
+.ov-label-ko{font-size:.72rem;color:var(--text-light);margin-bottom:.3rem;font-family:'Noto Serif KR',serif}
+.ov-value{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--text)}
 
-  /* COMPARISON */
-  .compare-section { padding: 5rem 1.5rem; max-width: 1100px; margin: 0 auto; }
-  .compare-section .section-label { text-align: center; margin-bottom: 0.75rem; }
-  .compare-section .section-title { text-align: center; margin-bottom: 2.5rem; }
-  .compare-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 8px 40px rgba(45,31,20,0.08); }
-  .compare-table th { font-family: 'Jost', sans-serif; font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase; padding: 1.1rem 1.3rem; text-align: left; border-bottom: 2px solid rgba(196,122,90,0.22); }
-  .compare-table th:first-child { color: var(--text-muted); }
-  .compare-table th.col-maj { background: rgba(196,122,90,0.06); color: var(--rose); }
-  .compare-table th.col-malt { background: rgba(122,140,126,0.06); color: var(--sage); }
-  .compare-table td { padding: 0.9rem 1.3rem; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid rgba(196,122,90,0.1); vertical-align: top; line-height: 1.6; }
-  .compare-table td:first-child { font-weight: 500; color: var(--deep); font-size: 0.76rem; white-space: nowrap; }
-  .compare-table td.col-maj { background: rgba(196,122,90,0.025); }
-  .compare-table td.col-malt { background: rgba(122,140,126,0.025); }
-  .compare-table tr:last-child td { border-bottom: none; }
-  .verdict-box { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
-  .verdict-card { padding: 1.6rem; border: 1px solid rgba(196,122,90,0.18); }
-  .verdict-card h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 400; margin-bottom: 0.75rem; }
-  .verdict-card p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.7; margin-top: 1rem; }
-  .verdict-card.maj { border-top: 3px solid var(--rose); }
-  .verdict-card.malt { border-top: 3px solid var(--sage); }
-  .rating-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-  .rating-label { font-size: 0.7rem; color: var(--text-muted); min-width: 90px; }
-  .rating-bar-wrap { flex: 1; margin: 0 0.7rem; height: 4px; background: rgba(196,122,90,0.1); border-radius: 2px; }
-  .rating-bar { height: 100%; border-radius: 2px; transition: width 1s ease; }
-  .rating-score { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 600; min-width: 28px; text-align: right; }
+/* SPA */
+.spa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;margin-top:2.5rem}
+.spa-card{background:var(--ivory);border-radius:6px;padding:1.5rem 1.3rem;border:1px solid rgba(90,154,181,.25);transition:border-color .3s}
+.spa-card:hover{border-color:var(--sea)}
+.spa-card-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text);margin-bottom:.4rem}
+.spa-card p{font-size:.83rem;color:var(--text-mid);line-height:1.7}
+.spa-deal{margin-top:2.5rem;background:linear-gradient(135deg,var(--sea-pale),var(--cream));border:1px solid var(--sea-light);border-radius:6px;padding:1.5rem 2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.spa-deal-badge{background:var(--sea);color:#fff;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;padding:7px 14px;border-radius:30px;white-space:nowrap}
+.spa-deal p{font-size:.87rem;color:var(--text-mid);line-height:1.6}
+.spa-deal strong{color:var(--sea);font-weight:500}
 
-  /* ORNAMENT / FOOTER */
-  .ornament { text-align: center; color: var(--blush); font-size: 1.1rem; letter-spacing: 0.5em; margin: 3rem 0; opacity: 0.6; }
-  footer { background: var(--deep); color: rgba(255,255,255,0.4); text-align: center; padding: 3rem 2rem; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; }
-  .footer-hearts { font-size: 1.1rem; color: var(--rose); display: block; margin-bottom: 0.7rem; letter-spacing: 0.5rem; }
-  .footer-names { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.35rem; color: var(--blush); letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem; }
+/* ACTIVITIES */
+.activities-cols{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem}
+@media(max-width:680px){.activities-cols{grid-template-columns:1fr;gap:1.5rem}}
+.act-group-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--text);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--sand)}
+.act-item{display:flex;gap:.9rem;padding:.75rem 0;border-bottom:1px solid rgba(184,150,90,.1);align-items:flex-start}
+.act-item:last-child{border-bottom:none}
+.act-num{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--gold-light);font-style:italic;flex-shrink:0;width:18px;padding-top:2px}
+.act-text{font-size:.83rem;color:var(--text-mid);line-height:1.65}
+.act-text strong{color:var(--text);font-weight:500}
+.act-ko{display:block;font-family:'Noto Serif KR',serif;font-size:.75rem;color:var(--text-light);margin-top:2px}
 
-  /* ANIMATIONS */
-  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes scrollPulse { 0%,100%{opacity:0.45}50%{opacity:1} }
-  @keyframes panelReveal { from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)} }
+/* ITINERARY */
+.day-block{display:grid;grid-template-columns:70px 1fr;gap:0 1.5rem;margin-bottom:0}
+.day-marker{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.day-circle{width:38px;height:38px;border-radius:50%;background:var(--cream);border:1px solid var(--sand);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.day-circle span{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:var(--rose)}
+.day-circle.fr span{color:var(--france)}
+.day-line{width:1px;flex:1;min-height:36px;background:linear-gradient(to bottom,var(--sand),transparent);margin:5px 0}
+.day-content{padding-bottom:2.5rem}
+.day-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--text);margin-bottom:.6rem;padding-top:6px}
+.day-title-ko{display:block;font-family:'Noto Serif KR',serif;font-size:.8rem;color:var(--text-light);font-weight:300;margin-top:2px;margin-bottom:.6rem}
+.day-items{list-style:none}
+.day-items li{font-size:.85rem;color:var(--text-mid);padding:.4rem 0;padding-left:.9rem;border-left:2px solid transparent;line-height:1.6;transition:border-color .2s,padding-left .2s}
+.day-items li:hover{border-left-color:var(--rose);padding-left:1.2rem;color:var(--text)}
+.day-items li strong{color:var(--text);font-weight:500}
 
-  @media(max-width:640px){
-    .panel-hero{height:200px}
-    .cards-grid{grid-template-columns:1fr}
-    #map{height:270px}
-    .verdict-box{grid-template-columns:1fr}
-    .compare-table td,.compare-table th{padding:0.7rem 0.8rem;font-size:0.72rem}
-    .compare-table td:first-child{white-space:normal}
-    .day-card{grid-template-columns:42px 1fr}
-    .site-nav{gap:0.25rem}
-  }
+/* BUDGET */
+.budget-table{margin-top:2.5rem;border:1px solid var(--sand);border-radius:6px;overflow:hidden}
+.budget-header{display:grid;grid-template-columns:1fr auto auto;gap:1rem;padding:.6rem 1.3rem;background:var(--sand)}
+.budget-header span{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mid);text-align:right}
+.budget-header span:first-child{text-align:left}
+.budget-row{display:grid;grid-template-columns:1fr auto auto;gap:1rem;padding:.9rem 1.3rem;border-bottom:1px solid rgba(184,150,90,.15);align-items:center;transition:background .2s}
+.budget-row:hover{background:rgba(184,150,90,.04)}
+.budget-row:last-child{border-bottom:none}
+.budget-row.total{background:var(--text);border-bottom:none}
+.budget-row.total:hover{background:var(--text)}
+.budget-item{font-size:.86rem;color:var(--text-mid);line-height:1.5}
+.budget-item-ko{display:block;font-family:'Noto Serif KR',serif;font-size:.75rem;color:var(--text-light);margin-top:1px}
+.budget-row.total .budget-item{color:var(--gold-light)}
+.budget-row.total .budget-item-ko{color:rgba(212,176,122,.7)}
+.budget-low,.budget-high{font-family:'Cormorant Garamond',serif;font-size:1.15rem;text-align:right;color:var(--text)}
+.budget-row.total .budget-low,.budget-row.total .budget-high{color:var(--gold-light);font-size:1.3rem}
+
+/* COMPARE */
+.compare-table{border:1px solid var(--sand);border-radius:8px;overflow:hidden;margin-top:2.5rem}
+.compare-row{display:grid;grid-template-columns:160px 1fr 1fr;gap:0;border-bottom:.5px solid rgba(184,150,90,.15)}
+.compare-row:last-child{border-bottom:none}
+@media(max-width:600px){.compare-row{grid-template-columns:110px 1fr 1fr}}
+.compare-label{padding:.85rem 1rem;font-size:.78rem;color:var(--text-mid);font-family:'Noto Serif KR',serif;font-weight:300;background:rgba(250,247,242,.6);border-right:.5px solid rgba(184,150,90,.15)}
+.compare-cell{padding:.85rem 1rem;font-size:.82rem;color:var(--text);line-height:1.5;border-right:.5px solid rgba(184,150,90,.15)}
+.compare-cell:last-child{border-right:none}
+.compare-head{padding:.75rem 1rem;font-size:.78rem;font-weight:500;color:#fff;text-align:center}
+.compare-head.spain{background:var(--rose)}
+.compare-head.france{background:var(--france)}
+.compare-head.label{background:var(--text)}
+.win{color:var(--rose-deep);font-weight:500}
+.win-fr{color:var(--france);font-weight:500}
+
+/* VERDICT */
+.verdict-box{background:linear-gradient(135deg,var(--cream),var(--ivory));border:1px solid var(--sand);border-radius:8px;padding:2rem 2.5rem;margin-top:2.5rem}
+.verdict-box h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--text);margin-bottom:1rem}
+.verdict-box p{font-family:'Noto Serif KR',serif;font-size:.9rem;color:var(--text-mid);line-height:1.9;margin-bottom:.8rem;font-weight:300}
+.verdict-highlight{display:inline-block;background:var(--rose);color:#fff;padding:2px 10px;border-radius:20px;font-size:.75rem;margin-right:.4rem;font-family:'Jost',sans-serif}
+.verdict-highlight.fr{background:var(--france)}
+
+/* BOOKING */
+.booking-box{margin-top:2.5rem;background:var(--ivory);border:1px solid rgba(184,150,90,.22);border-radius:6px;padding:2rem 2.5rem}
+.booking-box h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--text);margin-bottom:1.2rem}
+.booking-tips{list-style:none}
+.booking-tips li{display:flex;gap:.6rem;padding:.55rem 0;font-size:.84rem;color:var(--text-mid);line-height:1.6;border-bottom:1px solid rgba(184,150,90,.1)}
+.booking-tips li:last-child{border-bottom:none}
+.booking-tips li strong{color:var(--text);font-weight:500}
+.tip-arrow{color:var(--gold);flex-shrink:0;font-size:.75rem;margin-top:4px}
+.cta-row{margin-top:1.5rem;display:flex;gap:.8rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.6rem;border-radius:3px;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:all .22s;cursor:pointer;border:none;font-family:'Jost',sans-serif}
+.btn-primary{background:var(--rose);color:#fff;border:1px solid var(--rose)}
+.btn-primary:hover{background:var(--rose-deep);border-color:var(--rose-deep);transform:translateY(-1px)}
+.btn-primary.fr{background:var(--france);border-color:var(--france)}
+.btn-primary.fr:hover{background:#2d6080;border-color:#2d6080}
+.btn-outline{background:transparent;color:var(--rose);border:1px solid var(--rose)}
+.btn-outline:hover{background:var(--rose);color:#fff;transform:translateY(-1px)}
+
+/* PULL QUOTE */
+.pull-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(1.2rem,2.5vw,1.8rem);font-style:italic;font-weight:300;color:var(--text-mid);text-align:center;max-width:650px;margin:3.5rem auto;line-height:1.55;padding:0 2rem;position:relative}
+.pull-quote::before,.pull-quote::after{content:'';display:block;width:36px;height:1px;background:var(--gold);margin:.8rem auto}
+
+/* FOOTER */
+footer{background:var(--text);color:rgba(255,255,255,.45);text-align:center;padding:2.5rem 2rem}
+footer .footer-names{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-style:italic;color:var(--gold-light);margin-bottom:.4rem}
+footer p{font-size:.7rem;letter-spacing:.12em;font-family:'Noto Serif KR',serif}
+
+/* STAR BADGES */
+.star-badge{display:inline-flex;align-items:center;gap:4px;background:var(--cream);border:1px solid var(--sand);border-radius:20px;padding:3px 10px;font-size:.65rem;color:var(--gold);margin-bottom:.6rem}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scrollPulse{0%,100%{opacity:.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.1)}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:600px){nav .nav-links{gap:.8rem}.nav-links a{font-size:.6rem}section{padding:3.5rem 1.2rem}.booking-box{padding:1.5rem 1.3rem}}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="site-nav">
-  <button class="nav-btn" onclick="scrollToHero()">♥ Home</button>
-  <button class="nav-btn" id="nav-majorca" onclick="showDest('majorca')">Majorca &amp; Morocco</button>
-  <button class="nav-btn" id="nav-malta" onclick="showDest('malta')">Malta &amp; Italy</button>
-  <button class="nav-btn" id="nav-compare" onclick="showCompare()">↔ Compare</button>
-</nav>
-
 <!-- HERO -->
-<header class="hero" id="hero">
-  <p class="hero-eyebrow">✦ A Journey for Two · 2026 ✦</p>
-  <h1 class="hero-names"><em>Nara</em><span class="hero-amp">&</span><em>Haejoo</em></h1>
-  <p class="hero-tag">Honeymoon 2026</p>
-  <p class="hero-sub">March 26th · Mediterranean &amp; Beyond</p>
-  <div class="hero-divider"></div>
-  <div class="hero-cta">
-    <button class="btn-destination" id="btn-majorca" onclick="showDest('majorca')">✦ Majorca &amp; Morocco</button>
-    <button class="btn-destination" id="btn-malta" onclick="showDest('malta')">✦ Malta &amp; Italy</button>
-    <button class="btn-destination" onclick="showCompare()">↔ Compare Both</button>
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">신혼여행 제안 · Honeymoon Proposal · May 2026</p>
+    <h1 class="hero-title">지중해의<br><em>봄날</em></h1>
+    <p class="hero-sub">스페인 마요르카 vs 프랑스 니스<br>우리만의 완벽한 허니문을 찾아서</p>
+    <div class="hero-names">Nara ♡ Hyejoo</div>
   </div>
-  <div class="scroll-hint"><span>Explore</span><div class="scroll-line"></div></div>
-</header>
-
-<!-- MAP -->
-<section class="map-section" id="map-section">
-  <p class="section-label">✦ The Journey ✦</p>
-  <h2 class="section-title">Where <em>Love</em> Takes Us</h2>
-  <div id="map"></div>
+  <div class="scroll-cue"><span>Scroll</span><div class="scroll-line"></div></div>
+  <div class="wave-bot"></div>
 </section>
 
-<!-- DESTINATIONS -->
-<div class="destinations-wrap">
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">Nara & Hyejoo · 2026</a>
+    <ul class="nav-links">
+      <li><a href="#destinations">목적지</a></li>
+      <li><a href="#compare">비교</a></li>
+      <li><a href="#budget">예산</a></li>
+    </ul>
+  </div>
+</nav>
 
-<!-- ═══════════ MAJORCA & MOROCCO ═══════════ -->
-<div class="destination-panel" id="panel-majorca">
-  <div class="panel-hero">
-    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80" alt="Majorca">
-    <div class="panel-hero-overlay">
-      <h2>Majorca <em>&amp;</em> Morocco</h2>
-      <p>Balearic bliss meets Maghreb magic</p>
+<!-- DESTINATION TABS -->
+<section id="destinations">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:2rem">
+      <span class="section-label">두 가지 선택지</span>
+      <h2 class="section-title">어디로 <em>떠날까요?</em></h2>
+      <div class="divider"></div>
+      <p class="section-ko">두 곳 모두 런던에서 직항 2시간 거리, 5월의 지중해 햇살을 함께 만끽할 수 있는 꿈 같은 여행지입니다.</p>
+    </div>
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="showTab('spain',this)">🇪🇸 스페인 마요르카</button>
+      <button class="tab-btn france-tab" onclick="showTab('france',this)">🇫🇷 프랑스 니스</button>
+      <button class="tab-btn compare-tab" onclick="showTab('compare',this)">⚖️ 비교하기</button>
+    </div>
+
+    <!-- SPAIN TAB -->
+    <div id="tab-spain" class="tab-panel active">
+
+      <!-- Photos -->
+      <div class="photo-grid reveal">
+        <img class="photo-wide" src="https://images.unsplash.com/photo-1606768993024-64a5df9ab6b1?w=800&q=80&auto=format&fit=crop" alt="마요르카 해안">
+        <img src="https://images.unsplash.com/photo-1570532740117-9aadb77f7dc6?w=400&q=80&auto=format&fit=crop" alt="마요르카 해변">
+        <img src="https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80&auto=format&fit=crop" alt="팔마 대성당">
+        <img src="https://images.unsplash.com/photo-1499678329028-101435549a4e?w=400&q=80&auto=format&fit=crop" alt="해양 액티비티">
+        <img class="photo-wide" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80&auto=format&fit=crop" alt="럭셔리 풀빌라">
+      </div>
+
+      <!-- Overview -->
+      <div class="overview-grid reveal">
+        <div class="ov-card"><span class="ov-icon">✈️</span><div class="ov-label-ko">런던 직항</div><div class="ov-value">약 2시간 30분</div></div>
+        <div class="ov-card"><span class="ov-icon">🌡</span><div class="ov-label-ko">5월 날씨</div><div class="ov-value">22–25°C · 맑음</div></div>
+        <div class="ov-card"><span class="ov-icon">🏖</span><div class="ov-label-ko">해변 종류</div><div class="ov-value">모래 해변 262개</div></div>
+        <div class="ov-card"><span class="ov-icon">💑</span><div class="ov-label-ko">성인 전용</div><div class="ov-value">5월 1일~</div></div>
+        <div class="ov-card"><span class="ov-icon">💰</span><div class="ov-label-ko">총 예산 (4박)</div><div class="ov-value">£2,400–3,600</div></div>
+        <div class="ov-card"><span class="ov-icon">🌊</span><div class="ov-label-ko">수상 액티비티</div><div class="ov-value">★★★★★</div></div>
+      </div>
+
+      <!-- Hotel Section -->
+      <div class="hotel-layout reveal" style="margin-top:3rem">
+        <div>
+          <span class="section-label">추천 호텔</span>
+          <h2 class="section-title">Hospes<br><em>Maricel & Spa</em></h2>
+          <div class="divider"></div>
+          <p class="section-ko">1950년대에 지어진 해변의 고성 같은 저택을 개조한 호텔. 16~17세기 스타일의 Santanyí 석회암 건축과 현대적인 Natura 빌딩이 지하 통로로 연결됩니다. Cas Català에 위치하며 팔마에서 8km 거리.</p>
+          <ul class="perk-list">
+            <li><span class="perk-dot"></span>허니문 특전: 카바 한 병 + 무료 룸 업그레이드 (가용 시)</li>
+            <li><span class="perk-dot"></span>전용 선착장 포함 3개의 직접 해수 접근 포인트</li>
+            <li><span class="perk-dot"></span>지평선과 맞닿은 인피니티 풀</li>
+            <li><span class="perk-dot"></span>해변 레스토랑에서의 '세계 최고의 아침식사' (수상 경력)</li>
+            <li><span class="perk-dot"></span>30m 거리에 Calanova 요트 클럽</li>
+            <li><span class="perk-dot"></span>매주 수요일 재즈 라이브 공연</li>
+            <li><span class="perk-dot"></span>5월 스파 트리트먼트 20% 할인 (50분 이상)</li>
+          </ul>
+        </div>
+        <div>
+          <span class="section-label">객실 선택</span>
+          <div class="room-cards">
+            <div class="room-card rec">
+              <div class="star-badge">⭐⭐⭐⭐⭐ Design Hotels Member</div>
+              <div class="room-name">Natura Dreamer</div>
+              <div class="room-size">50m² · Natura 빌딩</div>
+              <div class="room-price">~£420–550 <span>/ 1박</span></div>
+              <p class="room-ko">돌벽과 나무 바닥, 전용 야외 플런지 풀, 킹사이즈 침대, 독립형 욕조와 레인 샤워. 신혼여행 최적의 선택.</p>
+              <div class="room-features"><span class="tag">전용 플런지 풀</span><span class="tag">개인 테라스</span><span class="tag">킹 침대</span><span class="tag">해뷰 요청 가능</span></div>
+            </div>
+            <div class="room-card">
+              <div class="star-badge">⭐⭐⭐⭐⭐</div>
+              <div class="room-name">Natura Suite</div>
+              <div class="room-size">88m² · Natura 빌딩</div>
+              <div class="room-price">~£650–900 <span>/ 1박</span></div>
+              <p class="room-ko">별도 거실, 전용 플런지 풀, 최고급 린넨 & 가죽 인테리어. 가장 럭셔리한 선택.</p>
+              <div class="room-features"><span class="tag">전용 플런지 풀</span><span class="tag">거실 분리</span><span class="tag">프리미엄 스위트</span></div>
+            </div>
+            <div class="room-card">
+              <div class="star-badge">⭐⭐⭐⭐⭐</div>
+              <div class="room-name">Palace Sea View</div>
+              <div class="room-size">40m² · Palace 빌딩</div>
+              <div class="room-price">~£350–480 <span>/ 1박</span></div>
+              <p class="room-ko">아르 데코 인테리어, 파노라마 해뷰 테라스. 역사적인 궁전 분위기.</p>
+              <div class="room-features"><span class="tag">파노라마 해뷰</span><span class="tag">아르 데코</span><span class="tag">그랜드 테라스</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spa -->
+      <div class="reveal" style="margin-top:3rem">
+        <span class="section-label">Bodyna Spa</span>
+        <h2 class="section-title">절벽 위의 <em>스파</em></h2>
+        <div class="divider"></div>
+        <p class="section-ko">돌로 된 아치 아래, 파도 소리를 배경으로 지중해를 바라보며 받는 트리트먼트. 여름에는 자정까지 운영합니다.</p>
+        <div class="spa-grid">
+          <div class="spa-card"><div class="spa-card-title">커플 트리트먼트</div><p>5개의 트리트먼트 룸 (1개 커플 더블룸). 바다 절벽 아래 자연 동굴 그로토에서도 마사지 가능.</p></div>
+          <div class="spa-card"><div class="spa-card-title">온열 시설</div><p>해맘 (터키식 욕탕), 사우나, 자쿠지, 지중해 뷰 솔라리움 테라스. 실내/야외 수영장 연결.</p></div>
+          <div class="spa-card"><div class="spa-card-title">웰니스 프로그램</div><p>요가 & 필라테스 세션, 바디 랩, 마니큐어/페디큐어, 딥 티슈 마사지 등.</p></div>
+          <div class="spa-card"><div class="spa-card-title">피트니스 센터</div><p>완비된 헬스장 + 헤어 살롱. 이른 아침부터 자정까지 이용 가능 (하계 기준).</p></div>
+        </div>
+        <div class="spa-deal">
+          <div class="spa-deal-badge">2026 여름 특가</div>
+          <p><strong>5월 한정 스파 트리트먼트 20% 할인</strong> (50분 이상, 7~8월 제외). 커플 마사지 세션 약 £180–240에서 £40–50 절약 가능.</p>
+        </div>
+      </div>
+
+      <!-- Activities -->
+      <div class="hotel-section-bg reveal" style="margin-top:3rem;padding:2.5rem;border-radius:8px">
+        <span class="section-label">액티비티</span>
+        <h2 class="section-title">바다와 <em>섬을 즐기는 법</em></h2>
+        <div class="divider"></div>
+        <div class="activities-cols">
+          <div>
+            <div class="act-group-title">호텔 선착장에서</div>
+            <div class="act-item"><span class="act-num">1.</span><p class="act-text"><strong>카약</strong><span class="act-ko">해안 절벽과 숨겨진 해식 동굴 탐험</span></p></div>
+            <div class="act-item"><span class="act-num">2.</span><p class="act-text"><strong>스쿠버 다이빙 & 스노클링</strong><span class="act-ko">호텔 선착장에서 직접 입수 가능</span></p></div>
+            <div class="act-item"><span class="act-num">3.</span><p class="act-text"><strong>수상 스키 & 낚시</strong><span class="act-ko">프런트에서 예약, 장비 제공</span></p></div>
+            <div class="act-item"><span class="act-num">4.</span><p class="act-text"><strong>보트 트립</strong><span class="act-ko">숨겨진 Cala (작은 만) 탐방</span></p></div>
+            <div class="act-item"><span class="act-num">5.</span><p class="act-text"><strong>세일링</strong><span class="act-ko">30m 거리 Calanova 요트 클럽</span></p></div>
+          </div>
+          <div>
+            <div class="act-group-title">섬 여행</div>
+            <div class="act-item"><span class="act-num">1.</span><p class="act-text"><strong>팔마 구시가</strong><span class="act-ko">라 세우 대성당, 중세 골목, 루프탑 타파스</span></p></div>
+            <div class="act-item"><span class="act-num">2.</span><p class="act-text"><strong>Puerto Portals 마리나</strong><span class="act-ko">4km, 명품 부티크 & 요트 구경</span></p></div>
+            <div class="act-item"><span class="act-num">3.</span><p class="act-text"><strong>와이너리 투어</strong><span class="act-ko">Vins Nadal, Biniagual 현지 와인 시음</span></p></div>
+            <div class="act-item"><span class="act-num">4.</span><p class="act-text"><strong>트라문타나 산맥</strong><span class="act-ko">UNESCO 세계유산, 하이킹 & 사이클링</span></p></div>
+            <div class="act-item"><span class="act-num">5.</span><p class="act-text"><strong>쇼핑</strong><span class="act-ko">팔마 Jaime III 쇼핑 거리 (10분)</span></p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Itinerary Spain -->
+      <div class="reveal" style="margin-top:3rem">
+        <span class="section-label">여행 일정</span>
+        <h2 class="section-title">4박 5일 <em>완벽한 마요르카</em></h2>
+        <div class="divider"></div>
+        <div style="margin-top:2rem">
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle"><span>1</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">도착 & 첫 저녁<span class="day-title-ko">팔마 공항 → 호텔 15분</span></div>
+              <ul class="day-items">
+                <li>체크인 시 카바 한 병 & 룸 업그레이드 웰컴 서비스</li>
+                <li><strong>테라스 플런지 풀</strong>에서 첫 번째 지중해 감상</li>
+                <li><strong>Restaurante Maricel</strong> — 해뷰 테라스에서 5코스 테이스팅 메뉴 (랍스터 카넬로니 추천)</li>
+                <li>Maricel 칵테일 바에서 나이트캡</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle"><span>2</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">워터 데이<span class="day-title-ko">온종일 바다를 즐기는 날</span></div>
+              <ul class="day-items">
+                <li><strong>아침식사</strong> — 테라스에서 세계적으로 유명한 뷔페 브런치 (여유롭게 2시간)</li>
+                <li>선착장에서 <strong>카약</strong> 대여 — 해안 동굴 탐험</li>
+                <li>오후: 선착장 스노클링 또는 스쿠버 다이빙</li>
+                <li>골든 아워에 인피니티 풀에서 풀 바 드링크</li>
+                <li>수요일이라면 재즈 라이브 — Maricel 칵테일 바</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle"><span>3</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">스파 & 팔마 탐방<span class="day-title-ko">힐링과 문화의 하루</span></div>
+              <ul class="day-items">
+                <li><strong>오전:</strong> Bodyna 스파 커플 마사지 (그로토 트리트먼트 룸 — 사전 예약 필수)</li>
+                <li>해맘, 자쿠지, 솔라리움 테라스 이용</li>
+                <li><strong>오후:</strong> 팔마 구시가 탐방 — 라 세우 대성당, 아랍 목욕탕, Passeig des Born</li>
+                <li>Santa Catalina에서 선셋 타파스 & 칵테일</li>
+                <li>귀환 후 개인 플런지 풀 테라스에서 룸서비스</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle"><span>4</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">보트 트립 & 마지막 저녁<span class="day-title-ko">가장 로맨틱한 날</span></div>
+              <ul class="day-items">
+                <li><strong>오전:</strong> 호텔 컨시어지 예약 개인 보트 투어 — 숨겨진 Cala에서 수영</li>
+                <li>선상 피크닉 런치, 또는 해변 치링기토(바)에서 점심</li>
+                <li><strong>오후:</strong> Puerto Portals 마리나 산책 — 부티크 쇼핑, 젤라또</li>
+                <li>인피니티 풀에서 마지막 선셋</li>
+                <li><strong>마지막 저녁식사:</strong> Maricel 풀 테이스팅 메뉴로 마무리</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle"><span>5</span></div></div>
+            <div class="day-content">
+              <div class="day-title">귀국<span class="day-title-ko">마지막 아침 한 번 더</span></div>
+              <ul class="day-items">
+                <li>해뷰 테라스에서 마지막 아침식사</li>
+                <li>레이트 체크아웃 요청 가능 (가용 시)</li>
+                <li>팔마 공항까지 택시 15분 → 런던으로</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end spain tab -->
+
+    <!-- FRANCE TAB -->
+    <div id="tab-france" class="tab-panel">
+
+      <!-- Photos -->
+      <div class="photo-grid reveal">
+        <img class="photo-wide" src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800&q=80&auto=format&fit=crop" alt="니스 해안 프롬나드">
+        <img src="https://images.unsplash.com/photo-1491557345352-5929e343eb89?w=400&q=80&auto=format&fit=crop" alt="지중해 코트다쥐르">
+        <img src="https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?w=400&q=80&auto=format&fit=crop" alt="니스 구시가">
+        <img src="https://images.unsplash.com/photo-1563714193608-c3756a66e90e?w=400&q=80&auto=format&fit=crop" alt="프렌치 리비에라 선셋">
+        <img class="photo-wide" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80&auto=format&fit=crop" alt="프랑스 해변">
+      </div>
+
+      <!-- Overview -->
+      <div class="overview-grid reveal">
+        <div class="ov-card"><span class="ov-icon">✈️</span><div class="ov-label-ko">런던 직항</div><div class="ov-value">약 2시간 10분</div></div>
+        <div class="ov-card"><span class="ov-icon">🌡</span><div class="ov-label-ko">5월 날씨</div><div class="ov-value">20–23°C · 맑음</div></div>
+        <div class="ov-card"><span class="ov-icon">🎭</span><div class="ov-label-ko">문화 & 글래머</div><div class="ov-value">★★★★★</div></div>
+        <div class="ov-card"><span class="ov-icon">🏖</span><div class="ov-label-ko">해변 종류</div><div class="ov-value">자갈 해변 + 프라이빗 비치 클럽</div></div>
+        <div class="ov-card"><span class="ov-icon">💰</span><div class="ov-label-ko">총 예산 (4박)</div><div class="ov-value">£2,200–5,000+</div></div>
+        <div class="ov-card"><span class="ov-icon">🗺</span><div class="ov-label-ko">당일 여행</div><div class="ov-value">모나코, 칸, 에즈 빌리지</div></div>
+      </div>
+
+      <!-- Hotels France -->
+      <div class="reveal" style="margin-top:3rem">
+        <span class="section-label">호텔 비교 (3~5성)</span>
+        <h2 class="section-title section-title-fr">니스 & 코트다쥐르<br><em>추천 호텔</em></h2>
+        <div class="divider"></div>
+        <p class="section-ko">5성 럭셔리부터 합리적인 4성, 고평점 3~4성 부티크 호텔까지 — 예산에 맞는 최고의 선택지를 모았습니다.</p>
+      </div>
+
+      <div class="hotel-layout reveal">
+        <div>
+          <div class="room-card rec-fr" style="margin-bottom:1rem">
+            <div class="star-badge" style="color:var(--france);border-color:var(--sea-light)">⭐⭐⭐⭐⭐ Four Seasons</div>
+            <div class="room-name">Grand-Hôtel du Cap-Ferrat</div>
+            <div class="room-size">Saint-Jean-Cap-Ferrat · 5성</div>
+            <div class="room-price fr-price">~£800–1,200 <span>/ 1박</span></div>
+            <p class="room-ko">벨 에포크 스타일의 궁전 호텔. 6헥타르 정원, 미슐랭 스타 레스토랑, 개인 풀 스위트. 모나코까지 15분 거리. 가장 럭셔리한 선택.</p>
+            <div class="room-features"><span class="tag">미슐랭 레스토랑</span><span class="tag">해수 수영장</span><span class="tag">스파</span><span class="tag">풀 스위트</span></div>
+          </div>
+          <div class="room-card" style="margin-bottom:1rem">
+            <div class="star-badge" style="color:var(--france);border-color:var(--sea-light)">⭐⭐⭐⭐⭐ Relais & Châteaux</div>
+            <div class="room-name">La Réserve de Beaulieu</div>
+            <div class="room-size">Beaulieu-sur-Mer · 5성 · 39개 객실</div>
+            <div class="room-price fr-price">~£500–900 <span>/ 1박</span></div>
+            <p class="room-ko">단 39개 객실의 초소형 럭셔리 호텔. 전용 해수 접근, 카약 & 조디악 보트 무료 이용. 수상 경력 풍부.</p>
+            <div class="room-features"><span class="tag">전용 해수 접근</span><span class="tag">카약 무료</span><span class="tag">인피니티 풀</span></div>
+          </div>
+          <div class="room-card" style="margin-bottom:1rem">
+            <div class="star-badge" style="color:var(--france);border-color:var(--sea-light)">⭐⭐⭐⭐ 부티크</div>
+            <div class="room-name">Hôtel La Pérouse ★ 추천</div>
+            <div class="room-size">니스 성벽 절벽 · 4성 · 합리적인 가격</div>
+            <div class="room-price fr-price">~£200–380 <span>/ 1박</span></div>
+            <p class="room-ko">니스 Castle Hill 절벽에 위치한 숨겨진 보석 같은 호텔. 40개 이상 객실에서 Bay of Angels 뷰. 암벽에 파인 야외 수영장, 레몬 나무 테라스 레스토랑. 구시가 도보 5분. 가성비 최고.</p>
+            <div class="room-features"><span class="tag">만 뷰 발코니</span><span class="tag">암벽 수영장</span><span class="tag">루프탑 테라스</span><span class="tag">올드타운 도보</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="room-card" style="margin-bottom:1rem">
+            <div class="star-badge" style="color:var(--france);border-color:var(--sea-light)">⭐⭐⭐⭐ 역사적</div>
+            <div class="room-name">Hôtel Belles Rives</div>
+            <div class="room-size">Juan-les-Pins · 4성 · 아르 데코</div>
+            <div class="room-price fr-price">~£300–500 <span>/ 1박</span></div>
+            <p class="room-ko">F. 스콧 피츠제럴드가 머물렀던 1920년대 아르 데코 호텔. 전용 비치와 수상 스키 폰툰. 앙티브 근처.</p>
+            <div class="room-features"><span class="tag">전용 비치</span><span class="tag">수상 스키</span><span class="tag">아르 데코</span><span class="tag">역사적 건물</span></div>
+          </div>
+          <div class="room-card" style="margin-bottom:1rem">
+            <div class="star-badge" style="color:var(--france);border-color:var(--sea-light)">⭐⭐⭐⭐ 로맨틱</div>
+            <div class="room-name">Château Eza</div>
+            <div class="room-size">Èze 절벽 마을 · 4성</div>
+            <div class="room-price fr-price">~£250–450 <span>/ 1박</span></div>
+            <p class="room-ko">모나코 위 절벽 중세 마을에 위치. 파노라마 지중해 뷰, 독특한 로맨틱 분위기. 당일치기 모나코 방문 최적 위치.</p>
+            <div class="room-features"><span class="tag">절벽 위 뷰</span><span class="tag">중세 마을</span><span class="tag">모나코 근접</span><span class="tag">로맨틱 테라스</span></div>
+          </div>
+          <div class="room-card" style="margin-bottom:1rem">
+            <div class="star-badge" style="color:var(--france);border-color:var(--sea-light)">⭐⭐⭐ 고평점</div>
+            <div class="room-name">Hotel Suisse Nice</div>
+            <div class="room-size">니스 구시가 해변 · 3성</div>
+            <div class="room-price fr-price">~£130–220 <span>/ 1박</span></div>
+            <p class="room-ko">구시가 해변 위치, 발코니에서 지중해 직접 뷰. 스노클링 & 요트 투어 도보 거리. 합리적 예산의 최고 선택.</p>
+            <div class="room-features"><span class="tag">해변 바로 앞</span><span class="tag">발코니 해뷰</span><span class="tag">구시가 도보</span><span class="tag">가성비</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nice Activities -->
+      <div class="hotel-section-bg reveal" style="margin-top:2.5rem;padding:2.5rem;border-radius:8px">
+        <span class="section-label">니스에서 즐기는 것들</span>
+        <h2 class="section-title section-title-fr">글래머와 <em>바다의 조화</em></h2>
+        <div class="divider"></div>
+        <div class="activities-cols">
+          <div>
+            <div class="act-group-title">수상 액티비티</div>
+            <div class="act-item"><span class="act-num">1.</span><p class="act-text"><strong>프라이빗 비치 클럽</strong><span class="act-ko">La Croisette (칸), 니스 해변의 럭셔리 비치 클럽</span></p></div>
+            <div class="act-item"><span class="act-num">2.</span><p class="act-text"><strong>스노클링</strong><span class="act-ko">Île Sainte-Marguerite (칸 섬) 투명한 바닷속</span></p></div>
+            <div class="act-item"><span class="act-num">3.</span><p class="act-text"><strong>카약 & 보트</strong><span class="act-ko">La Réserve에서 무료 카약, 조디악 보트</span></p></div>
+            <div class="act-item"><span class="act-num">4.</span><p class="act-text"><strong>세일링 & 요트</strong><span class="act-ko">니스 항구 or 앙티브에서 요트 하루 대여</span></p></div>
+            <div class="act-item"><span class="act-num">5.</span><p class="act-text"><strong>제트스키</strong><span class="act-ko">프롬나드 데 장글레 해변에서 렌탈</span></p></div>
+          </div>
+          <div>
+            <div class="act-group-title">문화 & 당일 여행</div>
+            <div class="act-item"><span class="act-num">1.</span><p class="act-text"><strong>모나코 당일치기</strong><span class="act-ko">카지노 광장, 왕궁, F1 서킷 — 기차 25분</span></p></div>
+            <div class="act-item"><span class="act-num">2.</span><p class="act-text"><strong>칸 영화제 도시</strong><span class="act-ko">부케 라 크루아제트, 레랑 섬 — 기차 40분</span></p></div>
+            <div class="act-item"><span class="act-num">3.</span><p class="act-text"><strong>에즈 절벽 마을</strong><span class="act-ko">중세 마을 산책, 향수 공장, 파노라마 뷰</span></p></div>
+            <div class="act-item"><span class="act-num">4.</span><p class="act-text"><strong>니스 구시가</strong><span class="act-ko">Cours Saleya 꽃 시장, 쇼콜라 & 소카 파이</span></p></div>
+            <div class="act-item"><span class="act-num">5.</span><p class="act-text"><strong>헬리콥터 모나코</strong><span class="act-ko">15분 비행 — 특별한 날 스페셜 액티비티</span></p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Itinerary France -->
+      <div class="reveal" style="margin-top:3rem">
+        <span class="section-label">여행 일정</span>
+        <h2 class="section-title section-title-fr">4박 5일 <em>프렌치 리비에라</em></h2>
+        <div class="divider"></div>
+        <div style="margin-top:2rem">
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle fr"><span>1</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">니스 도착<span class="day-title-ko">공항에서 시내 15분</span></div>
+              <ul class="day-items">
+                <li>체크인 후 프롬나드 데 장글레 첫 산책</li>
+                <li>호텔 루프탑 테라스에서 Bay of Angels 석양 감상</li>
+                <li><strong>첫 저녁:</strong> 구시가 Vieux Nice — 소카(병아리콩 크레이프)와 지역 와인</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle fr"><span>2</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">모나코 당일치기<span class="day-title-ko">글래머의 정점</span></div>
+              <ul class="day-items">
+                <li><strong>오전:</strong> 기차로 모나코 이동 (25분) — 왕궁 교대식 관람</li>
+                <li>카지노 광장 산책, 유명한 그랑 카페 드 파리에서 커피</li>
+                <li><strong>점심:</strong> 항구 뷰 레스토랑에서 신선한 해산물</li>
+                <li>오후: 조각 정원, F1 서킷 트랙 산책</li>
+                <li><strong>저녁:</strong> 니스 귀환, 해변가 레스토랑 디너</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle fr"><span>3</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">비치 & 스파 데이<span class="day-title-ko">여유로운 하루</span></div>
+              <ul class="day-items">
+                <li><strong>오전:</strong> 프라이빗 비치 클럽 — 선베드와 파라솔, 바다 수영</li>
+                <li>스노클링 or 카약 렌탈</li>
+                <li><strong>오후:</strong> 호텔 스파 트리트먼트 (Hôtel La Pérouse: 자쿠지 & 사우나)</li>
+                <li>루프탑 테라스에서 아페롤 스프리츠와 선셋</li>
+                <li><strong>저녁:</strong> Le Petite Maison (니스 명소) 디너 예약 권장</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle fr"><span>4</span></div><div class="day-line"></div></div>
+            <div class="day-content">
+              <div class="day-title">에즈 & 칸 탐방<span class="day-title-ko">리비에라의 하이라이트</span></div>
+              <ul class="day-items">
+                <li><strong>오전:</strong> 에즈 절벽 마을 — 선인장 정원, 향수 공장, 파노라마 뷰</li>
+                <li>기차로 칸 이동 (40분) — 라 크루아제트 산책</li>
+                <li><strong>점심:</strong> 칸 항구 레스토랑</li>
+                <li>레랑 섬 페리 (선택) — 수도원과 해변</li>
+                <li><strong>마지막 저녁:</strong> 니스 귀환 후 루프탑 디너</li>
+              </ul>
+            </div>
+          </div>
+          <div class="day-block">
+            <div class="day-marker"><div class="day-circle fr"><span>5</span></div></div>
+            <div class="day-content">
+              <div class="day-title">귀국<span class="day-title-ko">마지막 아침 산책</span></div>
+              <ul class="day-items">
+                <li>Cours Saleya 꽃 시장 아침 산책</li>
+                <li>카페에서 크루아상과 카페 오레</li>
+                <li>니스 공항까지 트램 or 택시 20분 → 런던으로</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end france tab -->
+
+    <!-- COMPARE TAB -->
+    <div id="tab-compare" class="tab-panel">
+      <div class="reveal">
+        <span class="section-label">두 여행지 비교</span>
+        <h2 class="section-title">마요르카 vs <em>니스</em></h2>
+        <div class="divider"></div>
+        <p class="section-ko">각 여행지의 특징을 한눈에 비교해보세요. 어느 쪽이 우리에게 더 맞을까요?</p>
+      </div>
+      <div class="compare-table reveal">
+        <div class="compare-row">
+          <div class="compare-head label" style="display:flex;align-items:center">비교 항목</div>
+          <div class="compare-head spain">🇪🇸 마요르카 스페인</div>
+          <div class="compare-head france">🇫🇷 니스 프랑스</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">런던 직항 시간</div>
+          <div class="compare-cell">약 2시간 30분</div>
+          <div class="compare-cell win-fr">약 2시간 10분 ✓ 더 빠름</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">항공권 (2인 왕복)</div>
+          <div class="compare-cell win">£120–300 ✓ 더 저렴</div>
+          <div class="compare-cell">£120–360</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">5월 날씨</div>
+          <div class="compare-cell win">22–25°C · 하루 9시간 햇살 ✓</div>
+          <div class="compare-cell">20–23°C · 하루 8시간 햇살</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">호텔 최저가 (4박)</div>
+          <div class="compare-cell win">£1,400부터 (3성 포함) ✓</div>
+          <div class="compare-cell">£1,000부터 (3성 Hotel Suisse)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">해변 퀄리티</div>
+          <div class="compare-cell win">모래 해변 262개, 에메랄드 빛 Cala ✓</div>
+          <div class="compare-cell">대부분 자갈 + 프라이빗 비치 클럽</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">수상 액티비티</div>
+          <div class="compare-cell win">★★★★★ 카약·다이빙·세일링 풍부 ✓</div>
+          <div class="compare-cell">★★★★☆ 비치 클럽·제트스키·요트</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">문화 & 당일 여행</div>
+          <div class="compare-cell">팔마 구시가, 트라문타나 산맥, 와이너리</div>
+          <div class="compare-cell win-fr">모나코, 칸, 에즈 — 더 다양 ✓</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">글래머 & 분위기</div>
+          <div class="compare-cell">여유롭고 로맨틱한 섬 탈출</div>
+          <div class="compare-cell win-fr">화려하고 국제적인 코스모폴리탄 ✓</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">미식 경험</div>
+          <div class="compare-cell">신선한 지중해 해산물, 마요르카 전통 요리</div>
+          <div class="compare-cell win-fr">미슐랭 스타 레스토랑 다수 ✓</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">성인 전용 (5월)</div>
+          <div class="compare-cell win">✓ Hospes Maricel 5월~10월 성인 전용</div>
+          <div class="compare-cell">개별 호텔별 상이</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">전체 예산 (4박)</div>
+          <div class="compare-cell win">£2,400–3,600 (더 예측 가능) ✓</div>
+          <div class="compare-cell">£2,200–7,000+ (폭이 넓음)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-label">허니문 추천도</div>
+          <div class="compare-cell win">★★★★★ 수상 액티비티 최고</div>
+          <div class="compare-cell win-fr">★★★★★ 문화 & 당일 여행 최고</div>
+        </div>
+      </div>
+
+      <div class="verdict-box reveal">
+        <h3>🌊 나라 & 혜주의 스타일에는?</h3>
+        <p>
+          <span class="verdict-highlight">수상 액티비티 중심</span> 이라면 <strong>마요르카</strong>가 확실한 우세입니다. 모래 해변 262개, 선착장 바로 앞 카약·스쿠버·세일링, 그리고 성인 전용 분위기의 Hospes Maricel은 둘만의 조용하고 로맨틱한 시간을 만들기에 최적입니다.
+        </p>
+        <p>
+          <span class="verdict-highlight fr">여행 & 문화 중심</span> 이라면 <strong>니스/코트다쥐르</strong>가 매력적입니다. 모나코·칸·에즈까지 기차로 쉽게 다닐 수 있고, 미슐랭 레스토랑과 화려한 리비에라 라이프스타일을 즐길 수 있습니다. 단, 해변은 자갈이라 수상 액티비티 만족도는 조금 낮을 수 있습니다.
+        </p>
+        <p>
+          <strong>예산 기준:</strong> 니스도 Hotel Suisse (3성)나 La Pérouse (4성)를 선택하면 합리적인 예산으로 프랑스 리비에라를 즐길 수 있습니다. 마요르카의 Hospes Maricel보다 훨씬 저렴하게 출발하는 옵션이 있다는 것이 니스의 장점이기도 합니다.
+        </p>
+      </div>
+    </div><!-- end compare tab -->
+  </div><!-- end container -->
+</section>
+
+<!-- BUDGET SECTION -->
+<section class="hotel-section-bg" id="budget">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">예산 비교</span>
+      <h2 class="section-title">4박 5일 <em>비용 한눈에</em></h2>
+      <div class="divider"></div>
+      <p class="section-ko">2명 기준, 런던 출발, 5월 어깨철 기준 예상 비용. 성수기(7~8월) 대비 20~40% 저렴합니다.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem" class="reveal">
+      <div>
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--rose)"></div>
+          <span style="font-family:'Noto Serif KR',serif;font-size:.95rem;color:var(--text)">🇪🇸 마요르카 (Hospes Maricel 기준)</span>
+        </div>
+        <div class="budget-table">
+          <div class="budget-header"><span>항목</span><span>최소</span><span>최대</span></div>
+          <div class="budget-row"><div class="budget-item">항공권 (2인 왕복)<span class="budget-item-ko">easyJet/BA</span></div><div class="budget-low">£160</div><div class="budget-high">£400</div></div>
+          <div class="budget-row"><div class="budget-item">호텔 4박 (B&B)<span class="budget-item-ko">Natura Dreamer</span></div><div class="budget-low">£1,600</div><div class="budget-high">£2,200</div></div>
+          <div class="budget-row"><div class="budget-item">스파 커플 (20% 할인)<span class="budget-item-ko">Bodyna Spa</span></div><div class="budget-low">£140</div><div class="budget-high">£200</div></div>
+          <div class="budget-row"><div class="budget-item">보트 투어<span class="budget-item-ko">반일 프라이빗</span></div><div class="budget-low">£120</div><div class="budget-high">£220</div></div>
+          <div class="budget-row"><div class="budget-item">식사 & 기타<span class="budget-item-ko">저녁 4회, 점심, 음료</span></div><div class="budget-low">£300</div><div class="budget-high">£500</div></div>
+          <div class="budget-row total"><div class="budget-item">총 예상 비용<span class="budget-item-ko">2인 4박 5일</span></div><div class="budget-low">£2,320</div><div class="budget-high">£3,520</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--france)"></div>
+          <span style="font-family:'Noto Serif KR',serif;font-size:.95rem;color:var(--text)">🇫🇷 니스 (La Pérouse 4성 기준)</span>
+        </div>
+        <div class="budget-table">
+          <div class="budget-header"><span>항목</span><span>최소</span><span>최대</span></div>
+          <div class="budget-row"><div class="budget-item">항공권 (2인 왕복)<span class="budget-item-ko">easyJet/BA</span></div><div class="budget-low">£140</div><div class="budget-high">£360</div></div>
+          <div class="budget-row"><div class="budget-item">호텔 4박 (B&B)<span class="budget-item-ko">La Pérouse 4성</span></div><div class="budget-low">£800</div><div class="budget-high">£1,500</div></div>
+          <div class="budget-row"><div class="budget-item">비치 클럽 이용<span class="budget-item-ko">2일, 프라이빗 서비스 포함</span></div><div class="budget-low">£100</div><div class="budget-high">£200</div></div>
+          <div class="budget-row"><div class="budget-item">모나코 당일 투어<span class="budget-item-ko">기차 + 식사</span></div><div class="budget-low">£80</div><div class="budget-high">£150</div></div>
+          <div class="budget-row"><div class="budget-item">식사 & 기타<span class="budget-item-ko">미슐랭 1회 포함</span></div><div class="budget-low">£400</div><div class="budget-high">£700</div></div>
+          <div class="budget-row total" style="background:var(--france)"><div class="budget-item">총 예상 비용<span class="budget-item-ko">2인 4박 5일</span></div><div class="budget-low">£1,520</div><div class="budget-high">£2,910</div></div>
+        </div>
+        <p style="font-size:.75rem;color:var(--text-light);margin-top:.6rem;font-family:'Noto Serif KR',serif;line-height:1.6">※ 5성 Grand-Hôtel du Cap-Ferrat 선택 시: £5,000~8,000+</p>
+      </div>
+    </div>
+
+    <!-- Booking Tips -->
+    <div class="booking-box reveal">
+      <h3>예약 꿀팁 💡</h3>
+      <ul class="booking-tips">
+        <li><span class="tip-arrow">→</span><span><strong>마요르카:</strong> Hospes.com 공식 홈페이지에서 직접 예약 시 뉴스레터 10% 할인. 예약 시 허니문 명시 → 카바 + 룸 업그레이드. 해뷰 객실 요청 필수.</span></li>
+        <li><span class="tip-arrow">→</span><span><strong>니스:</strong> Hôtel La Pérouse는 Castle Hill 뷰 Superior Sea View 룸 예약 추천. Bay of Angels가 한눈에.</span></li>
+        <li><span class="tip-arrow">→</span><span><strong>항공권:</strong> 6~8주 전 예약이 5월 최적. easyJet(게이트윅/루턴), BA(히드로) 직항 모두 탁월. 화·목 출발이 주말보다 10~20% 저렴.</span></li>
+        <li><span class="tip-arrow">→</span><span><strong>마요르카 스파:</strong> Bodyna 커플 룸은 딱 1개. 5월이면 20% 할인이지만 조기 예약 필수.</span></li>
+        <li><span class="tip-arrow">→</span><span><strong>니스 당일 여행:</strong> 모나코·칸·에즈는 기차로 쉽게 이동 가능. 유레일 패스 불필요, 역에서 당일 티켓 구매로 충분.</span></li>
+      </ul>
+      <div class="cta-row">
+        <a href="https://www.hospes.com/en/maricel-spa/" target="_blank" class="btn btn-primary">🇪🇸 마요르카 호텔 →</a>
+        <a href="https://www.hotel-la-perouse.com" target="_blank" class="btn btn-primary fr">🇫🇷 니스 호텔 →</a>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="cards-grid">
-    <div class="card">
-      <div class="card-icon">🌙</div>
-      <div class="card-label">✦ Departing March 26th, 2026 ✦</div>
-      <h3>Trip Investment</h3>
-      <div class="cost-row"><span class="cost-days">6 Days / 5 Nights</span><span><span class="cost-amount">£2,850</span><span class="cost-badge">per couple</span></span></div>
-      <div class="cost-row"><span class="cost-days">7 Days / 6 Nights</span><span><span class="cost-amount">£3,400</span><span class="cost-badge">per couple</span></span></div>
-      <div class="cost-row"><span class="cost-days">8 Days / 7 Nights</span><span><span class="cost-amount">£3,950</span><span class="cost-badge">per couple</span></span></div>
-      <div class="tip-box"><strong>💡 Split tip:</strong> 4 nights Majorca → 2 nights Marrakech. Sun &amp; sea then souks &amp; spice — the perfect contrast honeymoon.</div>
-    </div>
-    <div class="card">
-      <div class="card-icon">✈️</div>
-      <div class="card-label">✦ Direct Flights · March 26th ✦</div>
-      <h3>Flight Options</h3>
-      <div class="flight-row"><div class="flight-route">London → Palma de Mallorca</div><div class="flight-price"><span class="flight-airline">Vueling / Ryanair</span><span class="flight-cost">~£120</span></div><div class="flight-note">2h 15m · Direct · per person return</div></div>
-      <div class="flight-row"><div class="flight-route">London → Marrakech</div><div class="flight-price"><span class="flight-airline">easyJet / Royal Air Maroc</span><span class="flight-cost">~£140</span></div><div class="flight-note">3h 30m · Direct · per person return</div></div>
-      <div class="flight-row"><div class="flight-route">Palma → Marrakech (internal)</div><div class="flight-price"><span class="flight-airline">Vueling / Transavia</span><span class="flight-cost">~£80</span></div><div class="flight-note">2h 20m · Direct · per person one-way</div></div>
-      <div class="tip-box"><strong>💡 Flight tip:</strong> Fly London→Palma outbound, Marrakech→London return. Book the internal Palma→Marrakech hop separately on Vueling — do it early for best prices.</div>
-    </div>
-  </div>
-
-  <!-- 6-DAY ITINERARY -->
-  <div class="itinerary-section">
-    <p class="section-label">✦ 6-Day Perfect Plan · March 26–31 ✦</p>
-    <h3>Nara &amp; Haejoo's <em>Dream 6 Days</em></h3>
-    <div class="day-grid">
-      <div class="day-card">
-        <div class="day-num">1<span>Day</span></div>
-        <div class="day-content">
-          <h4>Arrive Palma · Old Town &amp; First Sunset</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-food">Dining</span></div>
-          <ul>
-            <li>Check in, stroll the Cathedral La Seu — dramatic Gothic exterior on the waterfront</li>
-            <li>Wander the Arab Quarter (El Call) and Almudaina Palace gardens</li>
-            <li>Sunset drinks at Pacha Palma Beach rooftop overlooking the bay</li>
-            <li>Dinner at Adrián Quetglas — Michelin-starred, book ahead</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">2<span>Day</span></div>
-        <div class="day-content">
-          <h4>Sóller Valley · Vintage Train &amp; Kayaking</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-water">Water Sports</span></div>
-          <ul>
-            <li>Wooden vintage train Palma → Sóller (1h scenic mountain journey)</li>
-            <li>Hire kayaks at Port de Sóller — paddle the turquoise coves</li>
-            <li>Snorkelling at Cala Tuent, one of Majorca's most pristine bays</li>
-            <li>Sunset at Mirador de ses Barques — panoramic Tramuntana views</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">3<span>Day</span></div>
-        <div class="day-content">
-          <h4>Private Boat Charter · Hidden Coves &amp; Cliff Jumping</h4>
-          <div class="day-tags"><span class="day-tag tag-water">Water Sports</span><span class="day-tag tag-sight">Sightseeing</span></div>
-          <ul>
-            <li>Private boat from Port d'Andratx — sail to Sa Dragonera nature reserve island</li>
-            <li>Cliff jumping and swimming at crystal-clear Cala en Basset</li>
-            <li>Paddleboarding and floating lunch on deck with chilled rosé</li>
-            <li>Evening at Andratx village — local wine bar and market browsing</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">4<span>Day</span></div>
-        <div class="day-content">
-          <h4>Shopping Day · Palma Farewell</h4>
-          <div class="day-tags"><span class="day-tag tag-shop">Shopping</span><span class="day-tag tag-food">Dining</span></div>
-          <ul>
-            <li>Carrer de Sant Miquel &amp; Passeig del Born — boutique fashion &amp; design stores</li>
-            <li>Mercat de l'Olivar — local cheeses, sobrasada sausage, Majorcan pearls</li>
-            <li>Avinguda Jaume III — luxury boutiques: Hermès, Loewe, Zara flagship</li>
-            <li>Farewell dinner at La Bodeguilla — traditional Mallorcan cuisine and wine list</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">5<span>Day</span></div>
-        <div class="day-content">
-          <h4>Fly to Marrakech · Medina &amp; the Souks</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-shop">Shopping</span></div>
-          <ul>
-            <li>Morning flight Palma → Marrakech (2h 20m); check into riad</li>
-            <li>Explore the UNESCO Medina — souks for spices, leather goods, brass lanterns</li>
-            <li>Visit the Saadian Tombs and Bahia Palace — golden hour is breathtaking</li>
-            <li>Evening at Jemaa el-Fna square — snake charmers, musicians, street food</li>
-            <li>Rooftop dinner at Nomad restaurant overlooking the rooftops</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">6<span>Day</span></div>
-        <div class="day-content">
-          <h4>Hammam Spa &amp; Atlas Mountain Adventure</h4>
-          <div class="day-tags"><span class="day-tag tag-water">Leisure</span><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-shop">Shopping</span></div>
-          <ul>
-            <li>Sunrise hammam &amp; argan oil massage at Hammam de la Rose — pure luxury</li>
-            <li>Souk el Attarine — argan oil, Berber rugs, Moroccan perfumes (negotiate!)</li>
-            <li>Afternoon camel ride or quad bike into the Palmeraie palm groves</li>
-            <li>Optional day trip: Ourika Valley &amp; Atlas Mountains waterfalls (1h drive)</li>
-            <li>Farewell feast at La Maison Arabe — live Gnaoua music &amp; tagine dinner</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESORTS MAJORCA -->
-  <div class="resorts-section">
-    <p class="section-label">✦ Where to Stay — Majorca ✦</p>
-    <div class="resort-grid">
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80" alt="Cap Vermell">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Cap Vermell Grand Hotel</div>
-          <div class="resort-location">Canyamel, North-East Majorca</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£380</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.capvermell.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=600&q=80" alt="Jumeirah Port Soller">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Jumeirah Port Soller</div>
-          <div class="resort-location">Port de Sóller, Majorca</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£295</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.jumeirah.com/en/hotels-resorts/mallorca/jumeirah-port-soller" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80" alt="Can Alomar">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Hotel Can Alomar</div>
-          <div class="resort-location">Palma de Mallorca</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£260</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.hotelalomar.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&q=80" alt="Son Brull">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Son Brull Hotel &amp; Spa</div>
-          <div class="resort-location">Pollença, Majorca</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£220</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.sonbrull.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" alt="Barcelo Illetas Albatros">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★</div>
-          <div class="resort-name">Barceló Illetas Albatros</div>
-          <div class="resort-location">Illetes Beach, Majorca</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£165</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.barcelo.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-    </div>
-
-    <p class="section-label" style="margin-top:2.5rem">✦ Where to Stay — Morocco ✦</p>
-    <div class="resort-grid">
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80" alt="La Mamounia">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">La Mamounia</div>
-          <div class="resort-location">Marrakech, Morocco</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£620</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.mamounia.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Royal Mansour">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Royal Mansour</div>
-          <div class="resort-location">Marrakech, Morocco</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£850</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.royalmansour.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=600&q=80" alt="Riad Kniza">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Riad Kniza</div>
-          <div class="resort-location">Marrakech Medina</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£180</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.riadkniza.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80" alt="Selman Marrakech">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Selman Marrakech</div>
-          <div class="resort-location">Marrakech, Morocco</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£320</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.selman-marrakech.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&q=80" alt="Riad BE Marrakech">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★</div>
-          <div class="resort-name">Riad BE Marrakech</div>
-          <div class="resort-location">Marrakech Medina</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£120</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.riadbe.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ornament">♥ · · ♥ · · ♥</div>
+<div class="pull-quote reveal">
+  "지중해의 봄은 짧다 — 하지만 함께라면 영원히 기억될 것"
 </div>
 
-<!-- ═══════════ MALTA & ITALY ═══════════ -->
-<div class="destination-panel" id="panel-malta">
-  <div class="panel-hero">
-    <img src="https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=1200&q=80" alt="Malta">
-    <div class="panel-hero-overlay">
-      <h2>Malta <em>&amp;</em> Italy</h2>
-      <p>Ancient harbours &amp; la dolce vita</p>
-    </div>
-  </div>
-
-  <div class="cards-grid">
-    <div class="card">
-      <div class="card-icon">🌙</div>
-      <div class="card-label">✦ Departing March 26th, 2026 ✦</div>
-      <h3>Trip Investment</h3>
-      <div class="cost-row"><span class="cost-days">6 Days / 5 Nights</span><span><span class="cost-amount">£2,600</span><span class="cost-badge">per couple</span></span></div>
-      <div class="cost-row"><span class="cost-days">7 Days / 6 Nights</span><span><span class="cost-amount">£3,150</span><span class="cost-badge">per couple</span></span></div>
-      <div class="cost-row"><span class="cost-days">8 Days / 7 Nights</span><span><span class="cost-amount">£3,700</span><span class="cost-badge">per couple</span></span></div>
-      <div class="tip-box"><strong>💡 Split tip:</strong> 3 nights Valletta → Virtu Ferry to Sicily (90 min) → 2 nights Taormina. Best value and best scenery.</div>
-    </div>
-    <div class="card">
-      <div class="card-icon">✈️</div>
-      <div class="card-label">✦ Direct Flights · March 26th ✦</div>
-      <h3>Flight Options</h3>
-      <div class="flight-row"><div class="flight-route">London → Malta (Valletta)</div><div class="flight-price"><span class="flight-airline">KM Malta Airlines / Ryanair</span><span class="flight-cost">~£100</span></div><div class="flight-note">3h 05m · Direct · per person return</div></div>
-      <div class="flight-row"><div class="flight-route">London → Rome Fiumicino</div><div class="flight-price"><span class="flight-airline">ITA Airways / easyJet</span><span class="flight-cost">~£115</span></div><div class="flight-note">2h 45m · Direct · per person return</div></div>
-      <div class="flight-row"><div class="flight-route">London → Naples (Amalfi gateway)</div><div class="flight-price"><span class="flight-airline">easyJet / Ryanair</span><span class="flight-cost">~£95</span></div><div class="flight-note">2h 55m · Direct · per person return</div></div>
-      <div class="tip-box"><strong>💡 Ferry tip:</strong> Virtu Ferries Malta→Sicily runs daily — only £50pp, 90 min, wonderfully scenic. Book at <a href="https://www.virtuferry.com" target="_blank" style="color:var(--rose)">virtuferry.com</a></div>
-    </div>
-  </div>
-
-  <!-- 6-DAY ITINERARY MALTA -->
-  <div class="itinerary-section">
-    <p class="section-label">✦ 6-Day Perfect Plan · March 26–31 ✦</p>
-    <h3>Nara &amp; Haejoo's <em>Dream 6 Days</em></h3>
-    <div class="day-grid">
-      <div class="day-card">
-        <div class="day-num">1<span>Day</span></div>
-        <div class="day-content">
-          <h4>Arrive Valletta · Baroque Grandeur &amp; Grand Harbour</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-food">Dining</span></div>
-          <ul>
-            <li>Check in, walk the Grand Harbour — one of Europe's most dramatic views</li>
-            <li>St. John's Co-Cathedral: Caravaggio's masterpiece painting is inside</li>
-            <li>Upper Barrakka Gardens at sunset — daily 4pm cannon salute from the bastions</li>
-            <li>Dinner at Noni Restaurant — modern Maltese fine dining, elegant atmosphere</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">2<span>Day</span></div>
-        <div class="day-content">
-          <h4>Blue Lagoon · Snorkelling &amp; Sea Kayaking</h4>
-          <div class="day-tags"><span class="day-tag tag-water">Water Sports</span><span class="day-tag tag-sight">Sightseeing</span></div>
-          <ul>
-            <li>Ferry from Ċirkewwa to Comino Island (30 min) — the legendary Blue Lagoon</li>
-            <li>Snorkelling and swimming in crystal-turquoise waters (visibility up to 30m)</li>
-            <li>Sea kayaking around Comino's sea caves and natural arches</li>
-            <li>Optional: PADI dive at the Blue Hole cave dive, Gozo — world-famous site</li>
-            <li>Evening: sundowners at Trabuxu Wine Bar in Valletta</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">3<span>Day</span></div>
-        <div class="day-content">
-          <h4>Gozo Island · Citadel &amp; Ramla Bay</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-water">Leisure</span></div>
-          <ul>
-            <li>Ferry to Gozo (25 min) — hire a scooter or driver for the day</li>
-            <li>Dwejra Bay (former Azure Window site) — still a dramatic seascape</li>
-            <li>Ramla Bay — Malta's most beautiful sandy beach set in red-sand valley</li>
-            <li>Victoria Citadel medieval fortified city — panoramic views across Gozo</li>
-            <li>Lunch at Ta' Rikardu inside the Citadel — local cheese, gbejniet and wine</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">4<span>Day</span></div>
-        <div class="day-content">
-          <h4>Ferry to Sicily · Taormina &amp; Greek Theatre</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-shop">Shopping</span></div>
-          <ul>
-            <li>Morning Virtu Ferry Malta → Pozzallo, Sicily (90 min scenic crossing)</li>
-            <li>Drive to Taormina (1h) — jewel of the Sicilian coast, perched on cliffs</li>
-            <li>Ancient Greek Theatre of Taormina with Mt. Etna framed in the backdrop</li>
-            <li>Corso Umberto shopping street — handmade ceramics, Sicilian wines, jewellery</li>
-            <li>Dinner at Otto Geleng (Michelin-starred) with open-air terrace and sea views</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">5<span>Day</span></div>
-        <div class="day-content">
-          <h4>Mt. Etna Hike &amp; Isola Bella Beach</h4>
-          <div class="day-tags"><span class="day-tag tag-sight">Sightseeing</span><span class="day-tag tag-water">Water Sports</span></div>
-          <ul>
-            <li>Morning guided hike or cable car up Mt. Etna — Europe's largest active volcano</li>
-            <li>Lava field crater rim walk with panoramic Sicily views (weather permitting)</li>
-            <li>Afternoon: Isola Bella nature reserve cove — snorkelling in gin-clear water</li>
-            <li>Paddleboarding or windsurfing hire at Letojanni beach (5 min from Taormina)</li>
-            <li>Sunset cocktail at Terrazza Angelo with Etna glowing behind you</li>
-          </ul>
-        </div>
-      </div>
-      <div class="day-card">
-        <div class="day-num">6<span>Day</span></div>
-        <div class="day-content">
-          <h4>Catania Markets, Shopping &amp; Farewell</h4>
-          <div class="day-tags"><span class="day-tag tag-shop">Shopping</span><span class="day-tag tag-food">Dining</span></div>
-          <ul>
-            <li>La Pescheria fish market Catania — an extraordinary spectacle of colour and noise</li>
-            <li>Via Etnea &amp; Piazza del Duomo — Sicilian ceramics, handmade lace, local food gifts</li>
-            <li>Catania's Baroque palaces and the iconic Elephant Fountain</li>
-            <li>Farewell cannoli and arancini at Savia — the city's most famous bakery since 1897</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESORTS MALTA -->
-  <div class="resorts-section">
-    <p class="section-label">✦ Where to Stay — Malta &amp; Gozo ✦</p>
-    <div class="resort-grid">
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80" alt="The Phoenicia">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">The Phoenicia Malta</div>
-          <div class="resort-location">Valletta, Malta</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£280</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.phoeniciamalta.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&q=80" alt="Palazzo Ignazio">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Palazzo Ignazio</div>
-          <div class="resort-location">Valletta, Malta</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£195</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.palazzoignazio.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80" alt="Kempinski San Lawrenz">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Kempinski San Lawrenz</div>
-          <div class="resort-location">Gozo, Malta</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£210</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.kempinski.com/en/san-lawrenz" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" alt="Corinthia Palace">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Corinthia Palace</div>
-          <div class="resort-location">Attard, Malta</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£175</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.corinthia.com/en/hotels/malta" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-    </div>
-
-    <p class="section-label" style="margin-top:2.5rem">✦ Where to Stay — Sicily &amp; Italy ✦</p>
-    <div class="resort-grid">
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1512552288940-3a300922a275?w=600&q=80" alt="Belmond Villa Sant'Andrea">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Belmond Villa Sant'Andrea</div>
-          <div class="resort-location">Taormina, Sicily</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£420</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.belmond.com/hotels/europe/italy/sicily/belmond-villa-santandrea" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80" alt="San Domenico Palace">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">San Domenico Palace</div>
-          <div class="resort-location">Taormina, Sicily</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£580</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.fourseasons.com/taormina" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600&q=80" alt="Belmond Caruso">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Belmond Caruso</div>
-          <div class="resort-location">Ravello, Amalfi Coast</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£680</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.belmond.com/hotels/europe/italy/amalfi-coast/belmond-hotel-caruso" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&q=80" alt="Il Salviatino">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★★</div>
-          <div class="resort-name">Il Salviatino</div>
-          <div class="resort-location">Florence, Tuscany</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£440</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.salviatino.com" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-      <div class="resort-card">
-        <img class="resort-img" src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80" alt="Capo dei Greci">
-        <div class="resort-body">
-          <div class="resort-stars">★★★★</div>
-          <div class="resort-name">Capo dei Greci Taormina</div>
-          <div class="resort-location">Taormina Mare, Sicily</div>
-          <div class="resort-price"><span class="resort-price-from">from</span><span class="resort-price-amt">£220</span><span class="resort-price-per">/night</span></div>
-          <a class="resort-link" href="https://www.capodeigreci.it" target="_blank" rel="noopener">Visit Website →</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ornament">♥ · · ♥ · · ♥</div>
-</div>
-
-</div><!-- /destinations-wrap -->
-
-<!-- ═══════════ COMPARISON ═══════════ -->
-<div class="page-section" id="panel-compare">
-<div class="compare-section">
-  <p class="section-label">✦ Side by Side · For Nara &amp; Haejoo ✦</p>
-  <h2 class="section-title">Majorca &amp; Morocco <em>vs</em> Malta &amp; Italy</h2>
-
-  <table class="compare-table">
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th class="col-maj">🌊 Majorca &amp; Morocco</th>
-        <th class="col-malt">🏛️ Malta &amp; Italy</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Trip Cost (6 days)</td><td class="col-maj">£2,850 per couple</td><td class="col-malt">£2,600 per couple</td></tr>
-      <tr><td>Departing</td><td class="col-maj">March 26, 2026</td><td class="col-malt">March 26, 2026</td></tr>
-      <tr><td>Direct Flights</td><td class="col-maj">Yes — Palma &amp; Marrakech both direct. Internal Palma→Marrakech hop ~£80pp extra</td><td class="col-malt">Yes — Malta, Rome &amp; Naples all direct. Ferry between Malta &amp; Sicily only ~£50pp</td></tr>
-      <tr><td>Journey Complexity</td><td class="col-maj">Moderate — 2 flights + 1 internal. More bag-packing transitions</td><td class="col-malt">Easier — the Malta→Sicily ferry is seamless, scenic and affordable</td></tr>
-      <tr><td>Beaches &amp; Sea</td><td class="col-maj">⭐⭐⭐⭐⭐ World-class turquoise coves, pristine hidden beaches</td><td class="col-malt">⭐⭐⭐⭐⭐ Blue Lagoon, Ramla Bay, Isola Bella — genuinely stunning</td></tr>
-      <tr><td>Water Sports</td><td class="col-maj">Kayaking, snorkelling, private boat charters, cliff jumping, paddleboarding</td><td class="col-malt">Blue Lagoon snorkelling, PADI diving Blue Hole, sea kayaking, windsurfing, Mt. Etna hike</td></tr>
-      <tr><td>Sightseeing</td><td class="col-maj">Gothic cathedral, Arab medina, Atlas Mountains, Moroccan palaces &amp; gardens</td><td class="col-malt">UNESCO Valletta, Caravaggio, Greek theatre, Mt. Etna volcano, Baroque Sicily — incredibly rich</td></tr>
-      <tr><td>Shopping</td><td class="col-maj">Majorcan pearls &amp; leather; Moroccan spices, Berber rugs, argan oil, handmade lanterns</td><td class="col-malt">Sicilian ceramics, Maltese silver &amp; lace, Italian fashion, food markets, fine wines</td></tr>
-      <tr><td>Food &amp; Dining</td><td class="col-maj">Med tapas + Michelin dining in Palma + tagines &amp; Marrakech rooftop restaurants</td><td class="col-malt">Maltese rabbit stew &amp; fresh fish + Sicilian pasta, cannoli, arancini — epic food lovers trip</td></tr>
-      <tr><td>Romance Factor</td><td class="col-maj">High — private boat days, hammam spa, riad courtyards, Moroccan atmosphere</td><td class="col-malt">Very high — Grand Harbour sunsets, Taormina cliffside dinners, Amalfi terrace views</td></tr>
-      <tr><td>Weather (March)</td><td class="col-maj">Majorca 16°C sunny · Marrakech 20°C warm &amp; dry. Excellent timing</td><td class="col-malt">Malta 17°C sunny · Sicily 15°C mild. Occasional showers but largely beautiful</td></tr>
-      <tr><td>Budget Hotel (4★)</td><td class="col-maj">Son Brull from £220/night · Riad BE from £120/night</td><td class="col-malt">Corinthia Palace from £175/night · Palazzo Ignazio from £195/night</td></tr>
-      <tr><td>Luxury Splurge (5★)</td><td class="col-maj">Royal Mansour from £850/night · La Mamounia from £620/night</td><td class="col-malt">Belmond Caruso from £680/night · San Domenico Palace from £580/night</td></tr>
-      <tr><td>Best For</td><td class="col-maj">Adventurous duo craving exotic contrast — European chic meets North African mystique</td><td class="col-malt">Romantics who love history, food &amp; jaw-dropping landscapes — the classic Mediterranean</td></tr>
-      <tr><td>Overall Value</td><td class="col-maj">⭐⭐⭐⭐ Slightly pricier due to internal flight cost</td><td class="col-malt">⭐⭐⭐⭐⭐ Better value — ferry is cheap and adds a wonderful adventure</td></tr>
-    </tbody>
-  </table>
-
-  <!-- VERDICT CARDS -->
-  <div class="verdict-box">
-    <div class="verdict-card maj">
-      <h4>🌊 Majorca &amp; Morocco</h4>
-      <div style="margin:1rem 0">
-        <div class="rating-row"><span class="rating-label">Beaches</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:95%;background:var(--rose)"></div></div><span class="rating-score" style="color:var(--rose)">9.5</span></div>
-        <div class="rating-row"><span class="rating-label">Culture</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:90%;background:var(--rose)"></div></div><span class="rating-score" style="color:var(--rose)">9.0</span></div>
-        <div class="rating-row"><span class="rating-label">Romance</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:90%;background:var(--rose)"></div></div><span class="rating-score" style="color:var(--rose)">9.0</span></div>
-        <div class="rating-row"><span class="rating-label">Value</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:75%;background:var(--rose)"></div></div><span class="rating-score" style="color:var(--rose)">7.5</span></div>
-        <div class="rating-row"><span class="rating-label">Ease</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:70%;background:var(--rose)"></div></div><span class="rating-score" style="color:var(--rose)">7.0</span></div>
-      </div>
-      <p>The bolder, more adventurous choice. The contrast between Majorcan seaside luxury and Marrakech's sensory magic creates an unforgettable narrative. Choose this if you love diversity and exotic atmosphere.</p>
-    </div>
-    <div class="verdict-card malt">
-      <h4>🏛️ Malta &amp; Italy</h4>
-      <div style="margin:1rem 0">
-        <div class="rating-row"><span class="rating-label">Beaches</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:90%;background:var(--sage)"></div></div><span class="rating-score" style="color:var(--sage)">9.0</span></div>
-        <div class="rating-row"><span class="rating-label">Culture</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:95%;background:var(--sage)"></div></div><span class="rating-score" style="color:var(--sage)">9.5</span></div>
-        <div class="rating-row"><span class="rating-label">Romance</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:95%;background:var(--sage)"></div></div><span class="rating-score" style="color:var(--sage)">9.5</span></div>
-        <div class="rating-row"><span class="rating-label">Value</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:85%;background:var(--sage)"></div></div><span class="rating-score" style="color:var(--sage)">8.5</span></div>
-        <div class="rating-row"><span class="rating-label">Ease</span><div class="rating-bar-wrap"><div class="rating-bar" style="width:90%;background:var(--sage)"></div></div><span class="rating-score" style="color:var(--sage)">9.0</span></div>
-      </div>
-      <p>The more seamless, classically romantic option. Valletta's golden Baroque streets, the Blue Lagoon, and Sicily's drama make this a postcard at every turn. Slightly better value and easier to navigate.</p>
-    </div>
-  </div>
-
-  <div class="tip-box" style="margin-top:2rem;font-size:0.87rem;line-height:1.85">
-    <strong>💑 Our Verdict for Nara &amp; Haejoo, March 2026:</strong> Both trips are exceptional honeymoon choices. Choose <strong>Majorca &amp; Morocco</strong> if you want something exotic, sensory-rich and adventurous. Choose <strong>Malta &amp; Italy</strong> if you want effortless romance, incredible food and seamless travel. Either way — March 26th 2026 is the perfect time to go. The Mediterranean is warm, uncrowded and golden. You cannot go wrong. ♥
-  </div>
-</div>
-</div><!-- /panel-compare -->
-
-<!-- FOOTER -->
 <footer>
-  <span class="footer-hearts">♥ ♥ ♥</span>
-  <span class="footer-names">Nara &amp; Haejoo · 2026</span>
-  All prices are estimates for March 2026 — please verify before booking. Made with love.
+  <div class="footer-names">Nara & Hyejoo</div>
+  <p>5월의 지중해 · May 2026 · London 출발</p>
 </footer>
 
 <script>
-// MAP
-const map = L.map('map',{center:[37,8],zoom:4,zoomControl:true,scrollWheelZoom:false});
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:19}).addTo(map);
-const mkIcon=(color)=>L.divIcon({className:'',html:`<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2.5px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.4);"></div>`,iconAnchor:[7,7]});
-const places=[
-  {n:'🌊 Majorca',lat:39.6953,lng:3.0176,c:'#c47a5a'},
-  {n:'🌶️ Marrakech',lat:31.6295,lng:-7.9811,c:'#c47a5a'},
-  {n:'🏛️ Valletta, Malta',lat:35.8997,lng:14.5147,c:'#7a8c7e'},
-  {n:'🍕 Rome',lat:41.9028,lng:12.4964,c:'#7a8c7e'},
-  {n:'🍋 Amalfi Coast',lat:40.634,lng:14.6027,c:'#7a8c7e'},
-  {n:'🌋 Taormina, Sicily',lat:37.8516,lng:15.2879,c:'#7a8c7e'},
-  {n:'🌸 Florence',lat:43.7696,lng:11.2558,c:'#7a8c7e'},
-];
-places.forEach(p=>{L.marker([p.lat,p.lng],{icon:mkIcon(p.c)}).addTo(map).bindPopup(`<b>${p.n}</b>`);});
-const ps=document.createElement('style');
-ps.textContent=`.leaflet-popup-content-wrapper{border-radius:2px!important;font-family:'Jost',sans-serif!important;font-size:.8rem!important;box-shadow:0 8px 24px rgba(45,31,20,.18)!important;border:1px solid rgba(196,122,90,.3)!important}.leaflet-popup-tip{background:white!important}.leaflet-popup-content b{color:#2d1f14;font-weight:500}`;
-document.head.appendChild(ps);
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  // re-trigger reveal for newly visible elements
+  document.querySelectorAll('#tab-' + id + ' .reveal').forEach(el => {
+    if (!el.classList.contains('visible')) {
+      observer.observe(el);
+    }
+  });
+}
 
-// NAVIGATION
-function hideAll(){
-  document.querySelectorAll('.destination-panel,.page-section').forEach(p=>p.classList.remove('visible'));
-  document.querySelectorAll('.btn-destination,.nav-btn').forEach(b=>b.classList.remove('active'));
-}
-function showDest(dest){
-  hideAll();
-  document.getElementById('panel-'+dest)?.classList.add('visible');
-  document.getElementById('btn-'+dest)?.classList.add('active');
-  document.getElementById('nav-'+dest)?.classList.add('active');
-  setTimeout(()=>{
-    document.getElementById('map-section').scrollIntoView({behavior:'smooth'});
-  },80);
-  setTimeout(()=>{
-    document.getElementById('panel-'+dest)?.scrollIntoView({behavior:'smooth',block:'start'});
-  },500);
-}
-function showCompare(){
-  hideAll();
-  document.getElementById('panel-compare').classList.add('visible');
-  document.getElementById('nav-compare').classList.add('active');
-  setTimeout(()=>document.getElementById('panel-compare').scrollIntoView({behavior:'smooth',block:'start'}),100);
-}
-function scrollToHero(){
-  hideAll();
-  document.getElementById('hero').scrollIntoView({behavior:'smooth'});
-}
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
